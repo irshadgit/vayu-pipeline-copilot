@@ -1,20 +1,20 @@
 from langgraph.prebuilt import create_react_agent
 from langgraph.graph import StateGraph, END
 import asyncio
-from langgraph.checkpoint.memory import InMemorySaver
 from src.agent.dag_manager import create_dag_manager_agent
-from typing import TypedDict, Annotated
-from typing_extensions import TypedDict
-
+from typing_extensions import Annotated, TypedDict
+from langgraph.graph import add_messages
 # Define the state schema for our graph
-class AgentState(TypedDict):
-    messages: list[str]  # List of messages in the conversation
-    current_step: str    # Current step in the workflow
+class State(TypedDict):
+    # add_messages will default to upserting messages by ID to the existing list
+    # if a RemoveMessage is returned, it will delete the message in the list by ID
+    messages: Annotated[list, add_messages]
+
 
 async def create_graph():
     # Create the base graph with state schema
     workflow = StateGraph(
-        state_schema=AgentState
+        state_schema=State
     )
     
     # Create the DAG manager agent
@@ -29,8 +29,11 @@ async def create_graph():
     # Add edges (for now, just end after DAG manager)
     workflow.add_edge("dag_manager", END)
     
+    
+    compiled_graph = workflow.compile()
+    
     # Compile the graph
-    return workflow.compile()
+    return compiled_graph
 
 async def main():
     global graph

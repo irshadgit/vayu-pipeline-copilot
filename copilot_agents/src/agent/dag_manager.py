@@ -18,8 +18,7 @@ client = MultiServerMCPClient({
 async def create_dag_manager_agent():
     tools = await client.get_tools()
     # Move the blocking create_react_agent call to a separate thread
-    return await asyncio.to_thread(
-        create_react_agent,
+    return create_react_agent(
         DAGMANAGER_LLM,
         tools,
         prompt="An agent designed to interact with Apache Airflow and assist users by providing relevant details through the appropriate tools exposed by the Airflow MCP server. The agent should engage with the user to gather any necessary inputs or context required to invoke these tools effectively.",

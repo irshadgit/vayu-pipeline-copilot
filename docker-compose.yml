@@ -37,6 +37,7 @@ services:
       - AIRFLOW__CORE__LOAD_EXAMPLES=false
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
       - AIRFLOW__WEBSERVER__SECRET_KEY=your_secret_key_here
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
     volumes:
       - ./airflow_home/dags:/opt/airflow/dags
       - ./airflow_home/logs:/opt/airflow/logs
@@ -62,6 +63,7 @@ services:
       - AIRFLOW__CORE__FERNET_KEY=9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
       - AIRFLOW__CORE__LOAD_EXAMPLES=true
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
     volumes:
       - ./airflow_home/dags:/opt/airflow/dags
       - ./airflow_home/logs:/opt/airflow/logs
@@ -77,6 +79,7 @@ services:
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
       - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
       - AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
       - AIRFLOW__CORE__FERNET_KEY=9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
     volumes:
       - ./airflow_home/dags:/opt/airflow/dags
@@ -99,9 +102,10 @@ services:
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
       - _AIRFLOW_DB_UPGRADE=true
       - _AIRFLOW_WWW_USER_CREATE=true
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
       - _AIRFLOW_WWW_USER_USERNAME=airflow
       - _AIRFLOW_WWW_USER_PASSWORD=airflow
-    command: version
+    command: db init
 
   mcp-server:
     image: irshadkt/airflow-mcp:latest
@@ -123,23 +127,23 @@ services:
       retries: 5
       start_period: 30s
 
-  # # copilot_agents:
-  #   build:
-  #     context: ./copilot_agents
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "2024:2024"  # Using 8001 since 8000 is already used by mcp-server
-  #   environment:
-  #     - PYTHONPATH=/app
-  #     - AIRFLOW_MCP_URL=${AIRFLOW_MCP_URL:-http://mcp-server:8000/sse}
-  #     - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-  #   volumes:
-  #     - ./copilot_agents/src:/app/src  # For development, mount the source code
-  #   depends_on:
-  #     - mcp-server
-  #       # condition: service_healthy
-  #     - airflow-webserver
-  #       # condition: service_healthy
+  copilot_agents:
+    build:
+      context: ./copilot_agents
+      dockerfile: Dockerfile
+    ports:
+      - "2024:2024"  # Using 8001 since 8000 is already used by mcp-server
+    environment:
+      - PYTHONPATH=/app
+      - AIRFLOW_MCP_URL=${AIRFLOW_MCP_URL:-http://mcp-server:8000/sse}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    volumes:
+      - ./copilot_agents/src:/app/src  # For development, mount the source code
+    depends_on:
+      - mcp-server
+        # condition: service_healthy
+      - airflow-webserver
+        # condition: service_healthy
 
 volumes:
   postgres-data: 

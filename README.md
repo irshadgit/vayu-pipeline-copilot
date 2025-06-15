@@ -1,4 +1,4 @@
-# Vayu Pipeline Copilot 🚀
+# Vayu: The Copilot for Your Data Pipelines 🚀
 A conversational AI assistant for interacting with workflow orchestration tools. Currently supporting Apache Airflow, Vayu helps you manage and interact with your data pipelines through natural language conversations.
 
 ## Architecture
@@ -11,20 +11,20 @@ A conversational AI assistant for interacting with workflow orchestration tools.
 
 ## Project Structure
 
-
-├── copilot_agents/ # Main agent implementation directory
+```
+├── copilot_agents/ # LangGraph application module for Copilot
 │ ├── src/ # Source code for the agent
-│ │ └── agent/ # Core agent implementation
-│ │ ├── graph.py # Defines the LangGraph workflow and agent interactions
-│ │ └── dag_manager.py # Implements the DAG management agent with LLM integration
-│ ├── tests/ # Test files for the agent
-│ ├── static/ # Static files for the agent
-│ ├── Dockerfile # Docker configuration for the agent
-│ ├── requirements.txt # Python dependencies
-│ └── pyproject.toml # Project configuration and metadata
-├── docs/ # Documentation files
-├── docker-compose.yml # Docker Compose configuration for all services
-└── README.md # Project documentation
+│ │ └── agent/ # Core agent logic
+│ │ ├── graph.py # Defines the LangGraph workflow and agent flow
+│ │ └── dag_manager.py # DAG manager agent using LLM and MCP integration
+│ ├── tests/ # Unit and integration tests for the agent
+│ ├── static/ # Static assets (if any)
+│ ├── Dockerfile # Docker setup for containerizing the agent
+│ └── pyproject.toml # Project metadata and build system config
+├── docs/ # Project documentation & demo videos
+├── docker-compose.yml # Multi-service Docker Compose setup
+└── README.md # Project overview and usage guide
+```
 
 
 ## Getting Started
@@ -40,8 +40,8 @@ Before you begin, ensure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/data-pipeline-agent.git
-   cd data-pipeline-agent
+   git clone https://github.com/irshadgit/vayu-pipeline-copilot.git
+   cd vayu-pipeline-copilot
    ```
 
 2. Configure the LLM:
@@ -77,19 +77,16 @@ Before you begin, ensure you have the following installed:
    docker-compose up -d
    ```
 
-4. Verify that all services are running:
-   ```bash
-   docker-compose logs -f
-   ```
+4. Wait for all services to be running.
 
 5. Make sure services are accessible:
    - LangGraph Server: http://localhost:2024
-   - Airflow Web UI: http://localhost:8080
-   - Airflow API: http://localhost:8080/api/v1
+   - Airflow Web UI: http://localhost:8080 - Login with username: airflow & password: airflow
+   - Airflow MCP server: http://localhost:8000/sse
 
 ### Connecting to the Agent
 
-Instead of running the client application locally, you can use the deployed Agent Chat UI:
+You can use the deployed Agent Chat UI to connect to your langgraph server:
 
 1. Visit https://agentchat.vercel.app/
 2. In the setup form, use the following configuration:
