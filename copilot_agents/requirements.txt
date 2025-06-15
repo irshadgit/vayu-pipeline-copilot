@@ -1,0 +1,4 @@
+langgraph-cli[inmem]==0.2.12
+langgraph==0.4.8
+langchain[google-genai]==0.3.25
+langchain-mcp-adapters==0.1.7

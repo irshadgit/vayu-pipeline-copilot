@@ -1,0 +1,14 @@
+.git
+.github
+tests
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+*.egg-info
+.langgraph_api
+static 
