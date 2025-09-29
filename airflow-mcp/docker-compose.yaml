@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  airflow-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: airflow-mcp-server
+    ports:
+      - "3000:3000"
+    environment:
+      - MCP_TRANSPORT=sse
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=3000
+      - LOG_LEVEL=info
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:3000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - mcp-network
+
+  # mcp-inspector:
+  #   image: node:18-alpine
+  #   container_name: mcp-inspector
+  #   ports:
+  #     - "6274:6274"  # MCP Inspector web interface
+  #     - "6277:6277"  # MCP Inspector proxy server
+  #   working_dir: /app
+  #   command: >
+  #     sh -c "
+  #       npm install -g @modelcontextprotocol/inspector &&
+  #       npx @modelcontextprotocol/inspector
+  #     "
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - airflow-mcp
+  #   networks:
+  #     - mcp-network
+
+networks:
+  mcp-network:
+    driver: bridge

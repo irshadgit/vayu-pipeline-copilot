@@ -1,33 +1,33 @@
 [project]
-name = "agent"
+name = "airflow_copilot_agent"
 version = "0.0.1"
 description = "Starter template for making a new agent LangGraph."
 authors = [
-    { name = "William Fu-Hinthorn", email = "13333726+hinthornw@users.noreply.github.com" },
+    { name = "Irshad Muhammed", email = "irshadgit@users.noreply.github.com" },
 ]
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.9"
 dependencies = [
-    "langgraph==0.4.8",
+    "langgraph>=0.6.4",
     "python-dotenv>=1.0.1",
     "langchain[google-genai]==0.3.25",
-    "langchain-mcp-adapters==0.1.7"
+    "langchain-mcp-adapters==0.1.7",
+    "langchain==0.3.25"
 ]
 
 
 [project.optional-dependencies]
-dev = ["mypy>=1.11.1", "ruff>=0.6.1","langgraph-cli[inmem]==0.2.12"]
+dev = ["mypy>=1.11.1", "ruff>=0.6.1"]
 
 [build-system]
 requires = ["setuptools>=73.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["langgraph.templates.agent", "agent"]
+packages = ["airflow_co_piplot_agent", "airflow_co_piplot_agent"]
 [tool.setuptools.package-dir]
-"langgraph.templates.agent" = "src/agent"
-"agent" = "src/agent"
+"airflow_co_piplot_agent" = "src/agent"
 
 
 [tool.setuptools.package-data]
@@ -63,6 +63,6 @@ dev = [
     "mypy>=1.13.0",
     "pytest>=8.3.5",
     "ruff>=0.8.2",
-    "langgraph-cli[inmem]==0.2.12"
+    "langgraph-cli[inmem]>=0.3.8"
     
 ]

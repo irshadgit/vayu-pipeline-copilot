@@ -1,4 +1,4 @@
-from langgraph.prebuilt import create_react_agent
+# from langgraph.prebuilt import create_react_agent  # Temporarily disabled due to import issue
 from langgraph.graph import StateGraph, END
 import asyncio
 from src.agent.dag_manager import create_dag_manager_agent

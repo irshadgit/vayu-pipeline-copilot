@@ -40,7 +40,6 @@ services:
       - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
     volumes:
       - ./airflow_home/dags:/opt/airflow/dags
-      - ./airflow_home/logs:/opt/airflow/logs
       - ./airflow_home/plugins:/opt/airflow/plugins
     ports:
       - "8080:8080"
@@ -107,43 +106,54 @@ services:
       - _AIRFLOW_WWW_USER_PASSWORD=airflow
     command: db init
 
-  mcp-server:
-    image: irshadkt/airflow-mcp:latest
+  airflow-mcp-server:
+    build:
+      context: ./airflow-mcp
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "3000:3000"
     environment:
       - AIRFLOW_PASSWORD=airflow
       - AIRFLOW_USERNAME=airflow
       - AIRFLOW_HOST=http://airflow-webserver:8080
+      - MCP_TRANSPORT=sse
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=3000
+      - LOG_LEVEL=info
     depends_on:
       airflow-webserver:
         condition: service_healthy
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "sh", "-c", "status=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000); [ \"$status\" = \"200\" ] || [ \"$status\" = \"404\" ]"]
-      interval: 10s
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:3000/health')"]
+      interval: 30s
       timeout: 10s
-      retries: 5
-      start_period: 30s
+      retries: 3
+      start_period: 5s
 
-  copilot_agents:
+  adk_agent:
     build:
-      context: ./copilot_agents
+      context: ./adk_agent
       dockerfile: Dockerfile
     ports:
-      - "2024:2024"  # Using 8001 since 8000 is already used by mcp-server
+      - "8005:8080"
     environment:
       - PYTHONPATH=/app
-      - AIRFLOW_MCP_URL=${AIRFLOW_MCP_URL:-http://mcp-server:8000/sse}
+      - MCP_HOST=airflow-mcp-server
+      - MCP_PORT=3000
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     volumes:
-      - ./copilot_agents/src:/app/src  # For development, mount the source code
+      - ./adk_agent/vayu_agent:/app/vayu_agent  # For development, mount the source code
     depends_on:
-      - mcp-server
-        # condition: service_healthy
+      - airflow-mcp-server
       - airflow-webserver
-        # condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
 volumes:
   postgres-data: 

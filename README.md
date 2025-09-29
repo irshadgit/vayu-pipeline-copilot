@@ -4,23 +4,31 @@ A conversational AI assistant for interacting with workflow orchestration tools.
 ## Architecture
 
 ![Architecture Diagram](docs/vayu-architecture.png)
-* agent-chat-ui - https://github.com/langchain-ai/agent-chat-ui
-* mcp-server-apache-airflow - https://github.com/yangkyeongmo/mcp-server-apache-airflow
-* LangGraph - https://www.langchain.com/langgraph
-* Apache Airflow - https://airflow.apache.org/
+* Agent Development Kit (ADK) - AI agent framework for building conversational agents
+* FastMCP-based Airflow MCP Server - Local implementation for Airflow integration
+* Apache Airflow - https://airflow.apache.org/
+* Model Context Protocol (MCP) - https://modelcontextprotocol.io/
 
 ## Project Structure
 
 ```
-├── copilot_agents/ # LangGraph application module for Copilot
-│ ├── src/ # Source code for the agent
-│ │ └── agent/ # Core agent logic
-│ │ ├── graph.py # Defines the LangGraph workflow and agent flow
-│ │ └── dag_manager.py # DAG manager agent using LLM and MCP integration
-│ ├── tests/ # Unit and integration tests for the agent
-│ ├── static/ # Static assets (if any)
+├── adk_agent/ # ADK (Agent Development Kit) application module for Copilot
+│ ├── vayu_agent/ # Source code for the Vayu agent
+│ │ ├── tools/ # MCP tool integrations
+│ │ ├── prompts/ # Agent prompt templates
+│ │ └── models/ # Data models and schemas
+│ ├── requirements.txt # Python dependencies
 │ ├── Dockerfile # Docker setup for containerizing the agent
-│ └── pyproject.toml # Project metadata and build system config
+│ └── README.md # Agent-specific documentation
+├── airflow-mcp/ # FastMCP-based Airflow MCP server
+│ ├── server.py # MCP server implementation
+│ ├── requirements.txt # Server dependencies
+│ ├── Dockerfile # Docker setup for MCP server
+│ └── README.md # MCP server documentation
+├── airflow_home/ # Airflow configuration and DAGs
+│ ├── dags/ # Airflow DAG definitions
+│ ├── plugins/ # Airflow plugins
+│ └── logs/ # Airflow logs
 ├── docs/ # Project documentation & demo videos
 ├── docker-compose.yml # Multi-service Docker Compose setup
 └── README.md # Project overview and usage guide
@@ -53,46 +61,46 @@ Before you begin, ensure you have the following installed:
      ```
      GOOGLE_API_KEY=your_api_key_here
      ```
-   - The project uses Google's Gemini 2.0 Flash by default. You can change the LLM by modifying the `DAGMANAGER_LLM` environment variable:
-     ```
-     DAGMANAGER_LLM=google_genai:gemini-2.0-flash
-     ```
+   - The project uses Google's Gemini 2.0 Flash by default. You can change the LLM by modifying the ADK agent configuration.
    - To use a different LLM:
-     1. Add the required provider package to `requirements.txt`. For example:
-        - For OpenAI: `langchain-openai`
-        - For Anthropic: `langchain-anthropic`
-        - For Azure OpenAI: `langchain-azure-openai`
-     2. Update the `DAGMANAGER_LLM` environment variable:
+     1. Add the required provider package to `adk_agent/requirements.txt`. For example:
+        - For OpenAI: `openai`
+        - For Anthropic: `anthropic`
+        - For Azure OpenAI: `azure-openai`
+     2. Update the ADK agent configuration in the agent code or environment variables:
         ```
         # For OpenAI
-        DAGMANAGER_LLM=openai:gpt-4-turbo-preview
+        OPENAI_API_KEY=your_openai_key_here
         
         # For Anthropic
-        DAGMANAGER_LLM=anthropic:claude-3-opus-20240229
+        ANTHROPIC_API_KEY=your_anthropic_key_here
         ```
-     Note: Ensure the selected LLM supports tool calling functionality. For more information on configuring different LLM providers, refer to the [LangChain LLM Integration Guide](https://python.langchain.com/docs/modules/model_io/models/).
+     Note: Ensure the selected LLM supports tool calling functionality. The ADK framework supports multiple LLM providers through its extensible architecture.
 
-3. Start the services using Docker Compose:
+3. Start the services using Docker Compose with build:
    ```bash
-   docker-compose up -d
+   # Build and start all services
+   docker-compose up --build -d
+   
+   # Or if you want to see the logs in real-time
+   docker-compose up --build
    ```
+   
+   The `--build` flag ensures that Docker builds the local images for:
+   - `adk_agent` - Builds the ADK-based Vayu agent
+   - `airflow-mcp-server` - Builds the FastMCP-based Airflow server
 
-4. Wait for all services to be running.
+4. Wait for all services to be running (this may take a few minutes on first run).
 
 5. Make sure services are accessible:
-   - LangGraph Server: http://localhost:2024
+   - ADK Agent Server: http://localhost:8005
    - Airflow Web UI: http://localhost:8080 - Login with username: airflow & password: airflow
-   - Airflow MCP server: http://localhost:8000/sse
+   - Airflow MCP Server: http://localhost:3000
 
 ### Connecting to the Agent
 
-You can use the deployed Agent Chat UI to connect to your langgraph server:
+You can interact with the ADK-based Vayu agent through the web interface:
 
-1. Visit https://agentchat.vercel.app/
-2. In the setup form, use the following configuration:
-   - API URL: http://localhost:2024
-   - Assistant ID: agent
-
-3. Click "Continue" to start interacting with the agent through the chat interface.
-
-The agent will now be connected to your local LangGraph server and ready to help you manage your data pipelines.
+1. Open your browser and navigate to: http://localhost:8005
+2. The ADK web interface will load, providing you with a chat interface
+3. Start conversing with Vayu about your Airflow pipelines
