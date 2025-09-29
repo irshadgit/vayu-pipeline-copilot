@@ -1,0 +1,72 @@
+# Virtual environment
+.venv/**
+.lvenv/**
+# Airflow specific
+airflow_home/logs/
+airflow_home/plugins/
+airflow_home/dags/__pycache__/
+airflow_home/dags/*.pyc
+airflow_home/dags/*.pyo
+airflow_home/dags/*.pyd
+airflow_home/dags/.Python
+airflow_home/dags/build/
+airflow_home/dags/develop-eggs/
+airflow_home/dags/dist/
+airflow_home/dags/downloads/
+airflow_home/dags/eggs/
+airflow_home/dags/.eggs/
+airflow_home/dags/lib/
+airflow_home/dags/lib64/
+airflow_home/dags/parts/
+airflow_home/dags/sdist/
+airflow_home/dags/var/
+airflow_home/dags/wheels/
+airflow_home/dags/*.egg-info/
+airflow_home/dags/.installed.cfg
+airflow_home/dags/*.egg
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/

@@ -1,0 +1,1 @@
+langgraph-cli[inmem]==0.3.8
