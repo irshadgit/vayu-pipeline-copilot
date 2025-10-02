@@ -1,7 +1,7 @@
 import os
 from fastmcp import FastMCP
 
-from tools.dag import DAG_COLLECTION_SCHEMA, DAG_SCHEMA, get_dags_tool, get_dag_tool
+from tools.dag import DAG_COLLECTION_SCHEMA, DAG_SCHEMA, DAG_RUN_COLLECTION_SCHEMA, get_dags_tool, get_dag_tool, get_dag_runs_tool
 
 
 transport = os.getenv("MCP_TRANSPORT", "sse")
@@ -23,6 +23,12 @@ mcp.tool(
     description="Get a specific DAG by its dag_id.",
     output_schema=DAG_SCHEMA
 )(get_dag_tool)
+
+mcp.tool(
+    name="get_dag_runs",
+    description="Get DAG runs for a specific DAG or all DAGs. Use '~' as dag_id to retrieve runs for all DAGs.",
+    output_schema=DAG_RUN_COLLECTION_SCHEMA
+)(get_dag_runs_tool)
 
 # ============================================================================
 # Health Check Schema
