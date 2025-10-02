@@ -1,0 +1,83 @@
+{
+  "type": "object",
+  "description": "Collection of task instance tries for a specific task instance",
+  "properties": {
+    "task_instance_tries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Individual task instance try details",
+        "properties": {
+          "try_number": {
+            "type": "integer",
+            "description": "The try number for this attempt"
+          },
+          "state": {
+            "type": ["string", "null"],
+            "description": "State of the task instance try",
+            "enum": ["queued", "running", "success", "failed", "up_for_retry", "up_for_reschedule", "upstream_failed", "skipped", "scheduled", "deferred", "removed", "restarting", null]
+          },
+          "start_date": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "When this try started"
+          },
+          "end_date": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "When this try ended"
+          },
+          "duration": {
+            "type": ["number", "null"],
+            "description": "Duration of this try in seconds"
+          },
+          "hostname": {
+            "type": ["string", "null"],
+            "description": "Hostname where this try executed"
+          },
+          "unixname": {
+            "type": ["string", "null"],
+            "description": "Unix username for this try"
+          },
+          "job_id": {
+            "type": ["integer", "null"],
+            "description": "Job ID for this try"
+          },
+          "pool": {
+            "type": ["string", "null"],
+            "description": "Pool name for this try"
+          },
+          "queue": {
+            "type": ["string", "null"],
+            "description": "Queue name for this try"
+          },
+          "priority_weight": {
+            "type": ["integer", "null"],
+            "description": "Priority weight for this try"
+          },
+          "operator": {
+            "type": ["string", "null"],
+            "description": "Operator type for this try"
+          },
+          "queued_dttm": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "When this try was queued"
+          },
+          "pid": {
+            "type": ["integer", "null"],
+            "description": "Process ID for this try"
+          },
+          "executor_config": {
+            "type": ["object", "null"],
+            "description": "Executor configuration for this try",
+            "additionalProperties": true
+          }
+        },
+        "required": ["try_number"]
+      },
+      "description": "Array of task instance try objects"
+    }
+  },
+  "required": ["task_instance_tries"]
+}

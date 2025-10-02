@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "description": "A tag for DAG categorization and filtering",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Tag name/label",
+      "minLength": 1,
+      "maxLength": 100
+    }
+  },
+  "required": ["name"]
+}
+

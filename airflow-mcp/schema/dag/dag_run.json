@@ -1,0 +1,91 @@
+{
+  "type": "object",
+  "description": "DAG run object representing a single execution instance of a DAG",
+  "properties": {
+    "dag_run_id": {
+      "type": "string",
+      "description": "Unique identifier for the DAG run",
+      "minLength": 1
+    },
+    "dag_id": {
+      "type": "string",
+      "description": "The DAG ID this run belongs to",
+      "minLength": 1
+    },
+    "run_id": {
+      "type": "string",
+      "description": "Run ID for the DAG run",
+      "minLength": 1
+    },
+    "state": {
+      "type": ["string", "null"],
+      "description": "Current state of the DAG run",
+      "enum": ["queued", "running", "success", "failed", "up_for_retry", "up_for_reschedule", "upstream_failed", "skipped", "scheduled", null]
+    },
+    "run_type": {
+      "type": ["string", "null"],
+      "description": "Type of DAG run",
+      "enum": ["manual", "scheduled", "backfill", "dataset_triggered", null]
+    },
+    "execution_date": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Logical execution date of the DAG run"
+    },
+    "start_date": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the DAG run started"
+    },
+    "end_date": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the DAG run ended"
+    },
+    "created_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the DAG run was created"
+    },
+    "updated_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the DAG run was last updated"
+    },
+    "queued_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the DAG run was queued"
+    },
+    "data_interval_start": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Start of the data interval for this run"
+    },
+    "data_interval_end": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "End of the data interval for this run"
+    },
+    "conf": {
+      "type": ["object", "null"],
+      "description": "Configuration parameters for this DAG run",
+      "additionalProperties": true
+    },
+    "external_trigger": {
+      "type": ["boolean", "null"],
+      "description": "Whether this run was externally triggered"
+    },
+    "note": {
+      "type": ["string", "null"],
+      "description": "Note attached to the DAG run"
+    },
+    "logical_date": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Logical date of the DAG run (same as execution_date)"
+    }
+  },
+  "required": ["dag_run_id", "dag_id"]
+}
+

@@ -1,0 +1,167 @@
+{
+  "type": "object",
+  "description": "Complete DAG (Directed Acyclic Graph) object representing an Airflow workflow",
+  "properties": {
+    "dag_id": {
+      "type": "string",
+      "description": "Unique identifier for the DAG",
+      "minLength": 1,
+      "maxLength": 250
+    },
+    "root_dag_id": {
+      "type": ["string", "null"],
+      "description": "Root DAG ID if this is a sub-DAG"
+    },
+    "is_subdag": {
+      "type": "boolean",
+      "description": "Whether this is a sub-DAG"
+    },
+    "is_paused": {
+      "type": ["boolean", "null"],
+      "description": "Whether the DAG is currently paused"
+    },
+    "is_active": {
+      "type": ["boolean", "null"],
+      "description": "Whether the DAG is active"
+    },
+    "has_import_errors": {
+      "type": ["boolean", "null"],
+      "description": "Whether the DAG has import errors"
+    },
+    "last_parsed_time": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Last time the DAG was parsed"
+    },
+    "last_pickled": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Last time the DAG was pickled"
+    },
+    "last_expired": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Last time the DAG expired"
+    },
+    "start_date": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "DAG start date"
+    },
+    "end_date": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "DAG end date"
+    },
+    "schedule_interval": { "$ref": "./schedule_interval.json" },
+    "timetable_description": {
+      "type": ["string", "null"],
+      "description": "Human-readable schedule description"
+    },
+    "next_dagrun": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Next scheduled DAG run time"
+    },
+    "next_dagrun_data_interval_start": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Start of next run's data interval"
+    },
+    "next_dagrun_data_interval_end": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "End of next run's data interval"
+    },
+    "next_dagrun_create_after": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Time after which next run will be created"
+    },
+    "max_active_tasks": {
+      "type": ["integer", "null"],
+      "description": "Maximum number of active tasks",
+      "minimum": 1
+    },
+    "max_active_runs": {
+      "type": ["integer", "null"],
+      "description": "Maximum number of active DAG runs",
+      "minimum": 1
+    },
+    "max_consecutive_failed_dag_runs": {
+      "type": ["integer", "null"],
+      "description": "Max consecutive failures before auto-pause",
+      "minimum": 0
+    },
+    "concurrency": {
+      "type": ["integer", "null"],
+      "description": "Max running tasks (deprecated, use max_active_tasks)",
+      "minimum": 1
+    },
+    "has_task_concurrency_limits": {
+      "type": ["boolean", "null"],
+      "description": "Whether tasks have concurrency limits"
+    },
+    "catchup": {
+      "type": ["boolean", "null"],
+      "description": "Whether to backfill past runs"
+    },
+    "is_paused_upon_creation": {
+      "type": ["boolean", "null"],
+      "description": "Whether DAG is paused when created"
+    },
+    "dagrun_timeout": { "$ref": "../commons/time_delta.json" },
+    "render_template_as_native_obj": {
+      "type": ["boolean", "null"],
+      "description": "Whether to render templates as native objects"
+    },
+    "fileloc": {
+      "type": "string",
+      "description": "File path of DAG definition"
+    },
+    "file_token": {
+      "type": ["string", "null"],
+      "description": "Unique file token"
+    },
+    "owners": {
+      "type": ["array", "null"],
+      "items": { "type": "string" },
+      "description": "List of DAG owner usernames"
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "DAG description",
+      "maxLength": 5000
+    },
+    "doc_md": {
+      "type": ["string", "null"],
+      "description": "Extended documentation in Markdown"
+    },
+    "tags": {
+      "type": ["array", "null"],
+      "items": { "$ref": "../commons/tag.json" },
+      "description": "List of tags"
+    },
+    "params": { "$ref": "../commons/params.json" },
+    "default_view": {
+      "type": ["string", "null"],
+      "description": "Default view in UI",
+      "enum": ["tree", "graph", "duration", "gantt", "landing_times", "grid"]
+    },
+    "orientation": {
+      "type": ["string", "null"],
+      "description": "Graph orientation",
+      "enum": ["LR", "TB", "RL", "BT", null]
+    },
+    "scheduler_lock": {
+      "type": ["boolean", "null"],
+      "description": "Whether scheduler has a lock"
+    },
+    "pickle_id": {
+      "type": ["string", "null"],
+      "description": "Pickle ID in database"
+    }
+  },
+  "required": ["dag_id", "fileloc"]
+}
+

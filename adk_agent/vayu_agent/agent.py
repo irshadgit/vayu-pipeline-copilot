@@ -23,10 +23,13 @@ def create_dag_troubleshooter_agent() -> LlmAgent:
 🔧 **TOOLS AVAILABLE:**
 - `get_dags`: List and filter DAGs
 - `get_dag`: Get specific DAG information
-- `get_dag_details`: Get detailed DAG info including tasks
-- `get_variable`: Retrieve Airflow variables
 - `get_dag_runs`: Get DAG run information
-- `health`: Check system health
+- `list_task_instances`: List task instances for a specific DAG run
+- `get_task_instance`: Get details of a specific task instance
+- `get_task_instance_tries`: Get all tries for a specific task instance
+- `get_task_instance_try_details`: Get detailed information about a specific try
+- `get_task_instance_log`: Get logs for a specific task instance try
+- `get_health`: Check system health. This also give status of different airflow components
 
 Use these tools to diagnose DAG import errors, runtime issues, performance problems, and configuration issues. Provide clear analysis and actionable solutions.""",
         tools=[
@@ -35,10 +38,13 @@ Use these tools to diagnose DAG import errors, runtime issues, performance probl
                 tool_filter=[
                     'get_dags',
                     'get_dag',
-                    'get_dag_details', 
-                    'get_variable',
                     'get_dag_runs',
-                    'health'
+                    'list_task_instances',
+                    'get_task_instance',
+                    'get_task_instance_tries',
+                    'get_task_instance_try_details',
+                    'get_task_instance_log',
+                    'get_health'
                 ]
             )
         ]
@@ -56,10 +62,13 @@ def create_airflow_metadata_agent() -> LlmAgent:
 📊 **TOOLS AVAILABLE:**
 - `get_dags`: List and filter DAGs
 - `get_dag`: Get specific DAG information  
-- `get_dag_details`: Get detailed DAG info including tasks
-- `get_variable`: Retrieve Airflow variables
 - `get_dag_runs`: Get DAG run information
-- `health`: Check system health
+- `list_task_instances`: List task instances for a specific DAG run
+- `get_task_instance`: Get details of a specific task instance
+- `get_task_instance_tries`: Get all tries for a specific task instance
+- `get_task_instance_try_details`: Get detailed information about a specific try
+- `get_task_instance_log`: Get logs for a specific task instance try
+- `get_health`: Check system health. This also gives the status of different airflow components
 
 Use these tools to retrieve and present Airflow information in a clear, user-friendly format.""",
         tools=[
@@ -68,10 +77,13 @@ Use these tools to retrieve and present Airflow information in a clear, user-fri
                 tool_filter=[
                     'get_dags',
                     'get_dag',
-                    'get_dag_details',
-                    'get_variable',
                     'get_dag_runs',
-                    'health'
+                    'list_task_instances',
+                    'get_task_instance',
+                    'get_task_instance_tries',
+                    'get_task_instance_try_details',
+                    'get_task_instance_log',
+                    'get_health'
                 ]
             )
         ]
@@ -102,6 +114,13 @@ Your primary responsibility is to analyze incoming user requests and delegate th
 - Task failures or stuck DAG runs
 - Performance issues or timeout problems
 - Questions about why a DAG isn't running as expected
+- Task instance failures or execution issues
+- Analysis of task-level problems within DAG runs
+- Debugging specific task instances that are failing or stuck
+- Analyzing retry history and repeated failures
+- Investigating specific execution attempts and their details
+- Debugging task failures by examining log output
+- Analyzing error messages and stack traces from logs
 
 **Delegate to AirflowMetadataAgent when:**
 - User wants to retrieve information about DAGs, tasks, or variables
@@ -110,6 +129,12 @@ Your primary responsibility is to analyze incoming user requests and delegate th
 - Variable retrieval or configuration queries
 - Health checks and system status requests
 - Basic informational requests about Airflow components
+- Task instance monitoring and status queries
+- Detailed task execution information and history
+- Getting specific details about individual task instances
+- Retrieving retry history and execution attempts
+- Getting detailed information about specific tries
+- Retrieving and presenting log content from task executions
 
 **DELEGATION RULES:**
 1. Always analyze the user's intent before delegating
@@ -170,15 +195,17 @@ if __name__ == "__main__":
     print("   - Diagnoses DAG import and parsing errors")
     print("   - Resolves runtime execution issues")
     print("   - Analyzes performance and configuration problems")
+    print("   - Troubleshoots task instance failures and execution issues")
     print("   - Provides actionable troubleshooting guidance")
     print()
     print("📊 **AIRFLOW METADATA SUB-AGENT**")
     print("   - Retrieves comprehensive DAG and task information")
     print("   - Manages Airflow variables and configurations")
     print("   - Performs system health checks and monitoring")
+    print("   - Monitors task instances and execution details")
     print("   - Presents data in user-friendly formats")
     print()
-    print("🔧 Available MCP Tools: get_dags, get_dag, get_dag_details, get_variable, health")
+    print("🔧 Available MCP Tools: get_dags, get_dag, get_dag_runs, list_task_instances, get_task_instance, get_task_instance_tries, get_task_instance_try_details, get_task_instance_log, get_health")
     print("💬 Ready to help manage and troubleshoot your Airflow workflows!")
     print()
     print("💡 Usage Examples:")
@@ -186,6 +213,15 @@ if __name__ == "__main__":
     print("   - 'Show me details of the data_pipeline_etl DAG' → Delegates to Metadata Agent")
     print("   - 'Why isn't my DAG running?' → Delegates to TroubleShooter")
     print("   - 'List all active DAGs' → Delegates to Metadata Agent")
+    print("   - 'Show me task instances for DAG run X' → Delegates to Metadata Agent")
+    print("   - 'Why is task Y failing in my DAG?' → Delegates to TroubleShooter")
+    print("   - 'Get details of task Z in DAG run W' → Delegates to Metadata Agent")
+    print("   - 'Debug the python_task in sample_dag run' → Delegates to TroubleShooter")
+    print("   - 'Show me all tries for task X' → Delegates to Metadata Agent")
+    print("   - 'Why is my task failing repeatedly?' → Delegates to TroubleShooter")
+    print("   - 'Get details of try 3 for task Y' → Delegates to Metadata Agent")
+    print("   - 'Show me logs for task Z try 2' → Delegates to Metadata Agent")
+    print("   - 'What error is in the logs for my failed task?' → Delegates to TroubleShooter")
     print()
     print("🏗️  Agent Hierarchy:")
     print("   AirflowOrchestratorAgent (Parent)")

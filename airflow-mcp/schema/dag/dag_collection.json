@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "description": "Paginated collection of DAGs",
+  "properties": {
+    "dags": {
+      "type": "array",
+      "items": { "$ref": "./dag.json" },
+      "description": "Array of DAG objects"
+    },
+    "total_entries": {
+      "type": "integer",
+      "description": "Total number of matching DAGs",
+      "minimum": 0
+    }
+  },
+  "required": ["dags", "total_entries"]
+}
+

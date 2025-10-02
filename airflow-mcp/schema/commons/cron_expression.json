@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "description": "Represents a cron-based schedule",
+  "properties": {
+    "__type": {
+      "type": "string",
+      "const": "CronExpression",
+      "description": "Type identifier for CronExpression objects"
+    },
+    "value": {
+      "type": "string",
+      "description": "Cron expression string (e.g., '0 0 * * *' for daily at midnight)"
+    }
+  },
+  "required": ["__type", "value"]
+}
+

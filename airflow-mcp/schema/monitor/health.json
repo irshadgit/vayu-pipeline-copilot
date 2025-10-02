@@ -1,0 +1,82 @@
+{
+  "type": "object",
+  "description": "Airflow health information from the /health endpoint",
+  "properties": {
+    "metadatabase": {
+      "type": ["object", "null"],
+      "description": "Metadata database health",
+      "properties": {
+        "status": {
+          "type": ["string", "null"],
+          "description": "Health status",
+          "enum": ["healthy", "unhealthy", null]
+        },
+        "details": {
+          "type": ["object", "null"],
+          "description": "Optional diagnostic details",
+          "additionalProperties": true
+        }
+      },
+      "required": ["status"]
+    },
+    "scheduler": {
+      "type": ["object", "null"],
+      "description": "Scheduler health",
+      "properties": {
+        "status": {
+          "type": ["string", "null"],
+          "enum": ["healthy", "unhealthy", null]
+        },
+        "latest_scheduler_heartbeat": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Timestamp of latest scheduler heartbeat"
+        },
+        "details": {
+          "type": ["object", "null"],
+          "additionalProperties": true
+        }
+      },
+      "required": ["status"]
+    },
+    "triggerer": {
+      "type": ["object", "null"],
+      "description": "Triggerer health (may be null if not enabled)",
+      "properties": {
+        "status": {
+          "type": ["string", "null"],
+          "enum": ["healthy", "unhealthy", null]
+        },
+        "latest_triggerer_heartbeat": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Timestamp of latest triggerer heartbeat"
+        },
+        "details": {
+          "type": ["object", "null"],
+          "additionalProperties": true
+        }
+      }
+    },
+    "dag_processor": {
+      "type": ["object", "null"],
+      "description": "Dag processor health (may be null if not enabled)",
+      "properties": {
+        "status": {
+          "type": ["string", "null"],
+          "enum": ["healthy", "unhealthy", null]
+        },
+        "latest_dag_processor_heartbeat": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Timestamp of latest dag processor heartbeat"
+        },
+        "details": {
+          "type": ["object", "null"],
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
