@@ -1,20 +1,39 @@
-# Vayu Airflow Management Agent
+# Vayu Airflow Copilot Multi-Agent System
 
-A Google ADK agent that connects to the Airflow MCP server to provide intelligent Airflow workflow management capabilities.
+A sophisticated Google ADK multi-agent system that provides comprehensive Airflow workflow management and troubleshooting capabilities through specialized AI agents.
 
 ## Overview
 
-This agent uses the Google ADK (Agent Development Kit) to create an LLM-powered assistant that can help manage Apache Airflow workflows. It connects to the Airflow MCP (Model Context Protocol) server in the `../airflow-mcp` directory to access Airflow data and operations.
+This system uses the Google ADK (Agent Development Kit) to create a hierarchical multi-agent architecture with specialized agents for different aspects of Airflow management. The system connects to the Airflow MCP (Model Context Protocol) server to access Airflow data and operations.
 
-## Features
+## Architecture
 
-The agent provides the following capabilities:
+The system follows Google ADK's native agent hierarchy pattern with `sub_agents`:
 
-- **DAG Management**: List, filter, and get detailed information about DAGs
-- **Task Analysis**: Examine task configurations and dependencies within DAGs  
-- **Variable Access**: Retrieve and examine Airflow variables
-- **Health Monitoring**: Check the status of the Airflow system
-- **Intelligent Assistance**: Natural language interface for Airflow operations
+```
+AirflowOrchestratorAgent (Parent)
+├── DagTroubleShooterAgent (Sub-agent)
+└── AirflowMetadataAgent (Sub-agent)
+```
+
+## Agent Capabilities
+
+### 🎯 Orchestrator Agent (Main Interface)
+- **Intelligent Request Routing**: Analyzes user queries and delegates to appropriate sub-agents
+- **Unified Experience**: Provides a single entry point for all Airflow operations
+- **Context Management**: Coordinates responses from multiple specialized agents
+
+### 🔧 DAG TroubleShooter Agent
+- **Error Diagnosis**: Identifies DAG import errors, parsing failures, and runtime issues
+- **Performance Analysis**: Analyzes task execution bottlenecks and timeout problems
+- **Configuration Validation**: Validates DAG and task configurations against best practices
+- **Solution Recommendations**: Provides specific, actionable troubleshooting steps
+
+### 📊 Airflow Metadata Agent
+- **Information Retrieval**: Comprehensive DAG, task, and variable information access
+- **Data Presentation**: User-friendly formatting of complex Airflow configurations
+- **System Monitoring**: Health checks and status reporting
+- **Search & Filtering**: Advanced filtering and pattern matching for large datasets
 
 ## Prerequisites
 
@@ -49,35 +68,60 @@ The agent provides the following capabilities:
 python run_agent.py
 ```
 
-This starts an interactive session where you can ask questions about your Airflow setup.
+This starts an interactive session where you can ask questions about your Airflow setup. The orchestrator will automatically route your requests to the appropriate sub-agent.
 
-### Method 2: Direct Import
+### Method 2: Direct Import (Recommended)
 ```python
-from vayu_agent.agent import airflow_agent
+from vayu_agent.agent import root_agent
 
-# Ask about DAGs
-response = airflow_agent.run("Show me all active DAGs")
+# The orchestrator automatically delegates to the right sub-agent
+response = root_agent.run("Show me all active DAGs")
 print(response)
 
-# Get specific DAG details  
-response = airflow_agent.run("Get details for the data_pipeline_etl DAG")
+response = root_agent.run("My DAG is failing with import errors")
 print(response)
 
-# Check variables
-response = airflow_agent.run("What Airflow variables are configured?")
+response = root_agent.run("Get details for the data_pipeline_etl DAG")
+print(response)
+```
+
+### Method 3: Direct Sub-Agent Access (Advanced)
+```python
+from vayu_agent.agent import dag_troubleshooter_agent, airflow_metadata_agent
+
+# Direct troubleshooting
+response = dag_troubleshooter_agent.run("Analyze performance issues in my DAG")
+print(response)
+
+# Direct metadata access
+response = airflow_metadata_agent.run("List all DAGs with production tag")
 print(response)
 ```
 
 ## Example Interactions
 
-- **"Show me all DAGs"** - Lists all available DAGs with their status
-- **"Get details for example_python_operator"** - Shows detailed information about a specific DAG
-- **"What tasks are in the data_pipeline_etl DAG?"** - Displays task information and dependencies
-- **"Show me the email_config variable"** - Retrieves specific Airflow variable values
-- **"Is the Airflow system healthy?"** - Performs a health check
+### Troubleshooting Queries (→ DagTroubleShooterAgent)
+- **"My DAG is failing with import errors"** - Diagnoses parsing and import issues
+- **"Why isn't my data_pipeline_etl DAG running?"** - Analyzes execution problems
+- **"Fix performance issues in ml_training_pipeline"** - Identifies bottlenecks and optimization opportunities
+- **"Troubleshoot timeout errors in my DAG"** - Analyzes timeout configurations and suggests fixes
 
-## Architecture
+### Information Queries (→ AirflowMetadataAgent)  
+- **"Show me all active DAGs"** - Lists DAGs with current status
+- **"Get details for example_python_operator"** - Shows comprehensive DAG information
+- **"What tasks are in the data_pipeline_etl DAG?"** - Displays task hierarchy and dependencies
+- **"Show me the email_config variable"** - Retrieves and formats variable values
+- **"Is the Airflow system healthy?"** - Performs system health checks
 
+## Agent Hierarchy Benefits
+
+Using Google ADK's native `sub_agents` pattern provides:
+
+- **🎯 Automatic Delegation**: The orchestrator intelligently routes requests to specialized sub-agents
+- **🔄 Parent-Child Relationships**: ADK automatically manages agent relationships (`parent_agent` and `sub_agents`)
+- **🧠 Specialized Expertise**: Each sub-agent has focused knowledge and capabilities
+- **🚀 Scalable Architecture**: Easy to add new specialized agents as sub-agents
+- **💡 Clean Code**: Leverages ADK's built-in agent coordination mechanisms
 
 ## Configuration
 
@@ -126,20 +170,43 @@ export LOG_LEVEL=debug
 adk_agent/
 ├── vayu_agent/
 │   ├── __init__.py
-│   └── agent.py          # Main agent implementation
+│   └── agent.py          # Multi-agent system with ADK hierarchy
 ├── run_agent.py          # Interactive startup script
+├── example_usage.py      # Usage examples and demonstrations
 ├── requirements.txt      # Python dependencies
 ├── Dockerfile           # Container configuration
 └── README.md           # This file
 ```
 
-### Extending the Agent
+### Extending the Multi-Agent System
 
 To add new capabilities:
 
-1. Add new tools to the MCP server (`../airflow-mcp/server.py`)
-2. Update the `tool_filter` in `agent.py`
-3. Enhance the agent's instruction prompt as needed
+1. **Add MCP Tools**: Add new tools to the MCP server (`../airflow-mcp/server.py`)
+2. **Create New Sub-Agent**: Create a new specialized agent function in `agent.py`
+3. **Update Orchestrator**: Add the new sub-agent to the orchestrator's `sub_agents` list
+4. **Update Instructions**: Enhance delegation logic in the orchestrator's instruction prompt
+
+Example of adding a new sub-agent:
+```python
+def create_new_specialist_agent() -> LlmAgent:
+    return LlmAgent(
+        name="NewSpecialistAgent",
+        model="gemini-2.0-flash",
+        instruction="Your specialized instruction...",
+        tools=[MCPToolset(...)]
+    )
+
+# Add to orchestrator
+orchestrator = LlmAgent(
+    name="AirflowOrchestratorAgent",
+    sub_agents=[
+        dag_troubleshooter,
+        metadata_agent,
+        create_new_specialist_agent()  # Add here
+    ]
+)
+```
 
 ## License
 
