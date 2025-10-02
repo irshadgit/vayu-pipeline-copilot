@@ -23,7 +23,7 @@ services:
       retries: 50
 
   airflow-webserver:
-    image: apache/airflow:2.10.0
+    image: apache/airflow:2.10.5
     depends_on:
       - postgres
       - redis
@@ -34,7 +34,8 @@ services:
       - AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
       - AIRFLOW__CORE__FERNET_KEY=9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
-      - AIRFLOW__CORE__LOAD_EXAMPLES=false
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
       - AIRFLOW__WEBSERVER__SECRET_KEY=your_secret_key_here
       - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
@@ -51,7 +52,7 @@ services:
       retries: 5
 
   airflow-scheduler:
-    image: apache/airflow:2.10.0
+    image: apache/airflow:2.10.5
     depends_on:
       - airflow-webserver
     environment:
@@ -61,7 +62,8 @@ services:
       - AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
       - AIRFLOW__CORE__FERNET_KEY=9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
-      - AIRFLOW__CORE__LOAD_EXAMPLES=true
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
       - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
     volumes:
       - ./airflow_home/dags:/opt/airflow/dags
@@ -70,7 +72,7 @@ services:
     command: scheduler
 
   airflow-worker:
-    image: apache/airflow:2.10.0
+    image: apache/airflow:2.10.5
     depends_on:
       - airflow-scheduler
     environment:
@@ -79,6 +81,8 @@ services:
       - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
       - AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
       - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
       - AIRFLOW__CORE__FERNET_KEY=9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
     volumes:
       - ./airflow_home/dags:/opt/airflow/dags
@@ -87,7 +91,7 @@ services:
     command: celery worker
 
   airflow-init:
-    image: apache/airflow:2.10.0
+    image: apache/airflow:2.10.5
     depends_on:
       - postgres
     environment:
@@ -97,7 +101,8 @@ services:
       - AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
       - AIRFLOW__CORE__FERNET_KEY=9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
-      - AIRFLOW__CORE__LOAD_EXAMPLES=true
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
       - _AIRFLOW_DB_UPGRADE=true
       - _AIRFLOW_WWW_USER_CREATE=true
@@ -120,6 +125,9 @@ services:
       - MCP_HOST=0.0.0.0
       - MCP_PORT=3000
       - LOG_LEVEL=info
+    volumes:
+      - ./airflow-mcp/server.py:/app/server.py
+      - ./airflow-mcp/tools:/app/tools
     depends_on:
       airflow-webserver:
         condition: service_healthy
