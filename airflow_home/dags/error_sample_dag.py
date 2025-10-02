@@ -18,8 +18,6 @@ with DAG(
 
     catchup=False,
 
-    dagrun_timeout=datetime.timedelta(minutes=60),
-
     tags=["example", "example2"],
 
     params={"example_key": "example_value"},

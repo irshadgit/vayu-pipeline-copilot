@@ -97,6 +97,20 @@ Before you begin, ensure you have the following installed:
    - Airflow Web UI: http://localhost:8080 - Login with username: airflow & password: airflow
    - Airflow MCP Server: http://localhost:3000
 
+### VS Code settings (optional but recommended)
+
+Create `.vscode/settings.json` to enable on-save formatting and linting consistent with this repo. Once created, save the following content into it:
+
+```json
+{
+  "python.autoComplete.extraPaths":[
+        "./airflow-mcp/tools"
+    ]
+}
+
+```
+
+
 ### Connecting to the Agent
 
 You can interact with the ADK-based Vayu agent through the web interface:

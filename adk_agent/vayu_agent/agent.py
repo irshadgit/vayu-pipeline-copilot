@@ -3,8 +3,6 @@ from google.adk.agents import LlmAgent
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import SseServerParams
 
-# Path to the Airflow MCP server script in the parent directory
-PATH_TO_AIRFLOW_MCP_SERVER = "/home/irshad/my-repo/vayu-pipeline-copilot/airflow-mcp/server.py"
 
 # MCP server configuration
 MCP_HOST = os.getenv("MCP_HOST", "localhost")
@@ -39,9 +37,7 @@ Always be helpful and provide actionable insights based on the Airflow data you 
             # Filter to only include the Airflow management tools
             tool_filter=[
                 'get_dags',
-                'get_dag', 
-                'get_dag_details',
-                'get_variable',
+                'get_dag',
                 'health'
             ]
         )
@@ -51,5 +47,5 @@ Always be helpful and provide actionable insights based on the Airflow data you 
 if __name__ == "__main__":
     print("🚁 Airflow Management Agent initialized!")
     print(f"📡 Connecting to MCP server at {MCP_HOST}:{MCP_PORT}")
-    print("🔧 Available tools: get_dags, get_dag, get_dag_details, get_variable, health")
+    print("🔧 Available tools: get_dags, get_dag, health")
     print("💬 Ready to help manage your Airflow workflows!")
