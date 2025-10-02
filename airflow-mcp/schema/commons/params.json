@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "description": "Default parameters for the DAG (can be overridden at runtime)",
+  "additionalProperties": {
+    "oneOf": [
+      {"type": "string"},
+      {"type": "number"},
+      {"type": "boolean"},
+      {"type": "object"},
+      {"type": "array"},
+      {"type": "null"}
+    ]
+  }
+}
+

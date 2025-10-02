@@ -1,5 +1,19 @@
 version: '3.8'
 
+x-airflow-common:
+  &airflow-common-env
+  AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+  AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+  AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+  AIRFLOW__CORE__FERNET_KEY: 9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
+  AIRFLOW__WEBSERVER__SECRET_KEY: your_secret_key_here
+  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+  AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+  AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: 'False'
+  AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+  AIRFLOW__LOGGING__WORKER_LOG_SERVER_PORT: ''
+
 services:
   postgres:
     image: postgres:13
@@ -28,19 +42,11 @@ services:
       - postgres
       - redis
     environment:
-      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
-      - AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
-      - AIRFLOW__CORE__FERNET_KEY=9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
-      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
-      - AIRFLOW__CORE__LOAD_EXAMPLES=False
-      - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
-      - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
-      - AIRFLOW__WEBSERVER__SECRET_KEY=your_secret_key_here
-      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
+      <<: *airflow-common-env
+      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
     volumes:
       - ./airflow_home/dags:/opt/airflow/dags
+      - ./airflow_home/logs:/opt/airflow/logs  # ADDED: Mount logs volume
       - ./airflow_home/plugins:/opt/airflow/plugins
     ports:
       - "8080:8080"
@@ -56,15 +62,7 @@ services:
     depends_on:
       - airflow-webserver
     environment:
-      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
-      - AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
-      - AIRFLOW__CORE__FERNET_KEY=9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
-      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
-      - AIRFLOW__CORE__LOAD_EXAMPLES=False
-      - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
-      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
+      <<: *airflow-common-env
     volumes:
       - ./airflow_home/dags:/opt/airflow/dags
       - ./airflow_home/logs:/opt/airflow/logs
@@ -76,14 +74,7 @@ services:
     depends_on:
       - airflow-scheduler
     environment:
-      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
-      - AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
-      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
-      - AIRFLOW__CORE__LOAD_EXAMPLES=False
-      - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
-      - AIRFLOW__CORE__FERNET_KEY=9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
+      <<: *airflow-common-env
     volumes:
       - ./airflow_home/dags:/opt/airflow/dags
       - ./airflow_home/logs:/opt/airflow/logs
@@ -95,20 +86,16 @@ services:
     depends_on:
       - postgres
     environment:
-      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
-      - AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/0
-      - AIRFLOW__CORE__FERNET_KEY=9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
-      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
-      - AIRFLOW__CORE__LOAD_EXAMPLES=False
-      - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
-      - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
-      - _AIRFLOW_DB_UPGRADE=true
-      - _AIRFLOW_WWW_USER_CREATE=true
-      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
-      - _AIRFLOW_WWW_USER_USERNAME=airflow
-      - _AIRFLOW_WWW_USER_PASSWORD=airflow
+      <<: *airflow-common-env
+      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
+      _AIRFLOW_DB_UPGRADE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: airflow
+      _AIRFLOW_WWW_USER_PASSWORD: airflow
+    volumes:
+      - ./airflow_home/dags:/opt/airflow/dags
+      - ./airflow_home/logs:/opt/airflow/logs
+      - ./airflow_home/plugins:/opt/airflow/plugins
     command: db init
 
   airflow-mcp-server:
@@ -128,6 +115,7 @@ services:
     volumes:
       - ./airflow-mcp/server.py:/app/server.py
       - ./airflow-mcp/tools:/app/tools
+      - ./airflow-mcp/schema:/app/schema
     depends_on:
       airflow-webserver:
         condition: service_healthy
@@ -152,7 +140,7 @@ services:
       - MCP_PORT=3000
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     volumes:
-      - ./adk_agent/vayu_agent:/app/vayu_agent  # For development, mount the source code
+      - ./adk_agent/vayu_agent:/app/vayu_agent
     depends_on:
       - airflow-mcp-server
       - airflow-webserver
@@ -164,4 +152,4 @@ services:
       start_period: 5s
 
 volumes:
-  postgres-data: 
+  postgres-data:

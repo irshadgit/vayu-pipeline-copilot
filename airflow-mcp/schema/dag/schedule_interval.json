@@ -1,0 +1,12 @@
+{
+  "oneOf": [
+    { "$ref": "../commons/time_delta.json" },
+    { "$ref": "../commons/cron_expression.json" },
+    {
+      "type": "null",
+      "description": "No schedule (manually triggered only)"
+    }
+  ],
+  "description": "Schedule interval: TimeDelta for fixed intervals, CronExpression for cron schedules, or null for manual triggering"
+}
+

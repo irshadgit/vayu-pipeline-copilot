@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "description": "Represents a duration/time interval",
+  "properties": {
+    "__type": {
+      "type": "string",
+      "const": "TimeDelta",
+      "description": "Type identifier for TimeDelta objects"
+    },
+    "days": {
+      "type": "integer",
+      "description": "Number of days in the interval"
+    },
+    "seconds": {
+      "type": "integer",
+      "description": "Number of seconds in the interval (0-86399)",
+      "minimum": 0,
+      "maximum": 86399
+    },
+    "microseconds": {
+      "type": "integer",
+      "description": "Number of microseconds in the interval (0-999999)",
+      "minimum": 0,
+      "maximum": 999999
+    }
+  },
+  "required": ["__type"]
+}
+

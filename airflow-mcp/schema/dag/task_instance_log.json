@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "description": "Log content and metadata for a specific task instance try",
+  "properties": {
+    "content": {
+      "type": "string",
+      "description": "The log content as a string"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata about the log",
+      "properties": {
+        "dag_id": {
+          "type": "string",
+          "description": "The DAG ID"
+        },
+        "task_id": {
+          "type": "string",
+          "description": "The task ID"
+        },
+        "dag_run_id": {
+          "type": "string",
+          "description": "The DAG run ID"
+        },
+        "try_number": {
+          "type": "integer",
+          "description": "The try number"
+        },
+        "log_id": {
+          "type": "string",
+          "description": "Unique identifier for the log"
+        },
+        "when": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the log was created"
+        },
+        "log_filename": {
+          "type": "string",
+          "description": "The filename of the log"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "required": ["content"]
+}
