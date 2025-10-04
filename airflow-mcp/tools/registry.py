@@ -5,9 +5,11 @@ from tools.dag import (
     DAG_COLLECTION_SCHEMA,
     DAG_SCHEMA,
     DAG_RUN_COLLECTION_SCHEMA,
+    DAG_SOURCE_SCHEMA,
     get_dags_tool,
     get_dag_tool,
     get_dag_runs_tool,
+    get_dag_source_tool,
 )
 from tools.monitor import (
     HEALTH_SCHEMA,
@@ -53,6 +55,12 @@ def get_all_tool_specs() -> List[ToolSpec]:
             "description": "Get DAG runs for a specific DAG or all DAGs. Use '~' as dag_id to retrieve runs for all DAGs.",
             "output_schema": DAG_RUN_COLLECTION_SCHEMA,
             "handler": get_dag_runs_tool,
+        },
+        {
+            "name": "get_dag_source",
+            "description": "Get the source code of a DAG using its file token. The file_token is obtained from get_dag_details response file_token attribute.",
+            "output_schema": DAG_SOURCE_SCHEMA,
+            "handler": get_dag_source_tool,
         },
         {
             "name": "get_health",

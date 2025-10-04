@@ -33,6 +33,12 @@ DAG_RUN_SCHEMA = load_schema("dag/dag_run")
 
 DAG_RUN_COLLECTION_SCHEMA = load_schema("dag/dag_run_collection")
 
+# ============================================================================
+# DAG Source Schema
+# ============================================================================
+
+DAG_SOURCE_SCHEMA = load_schema("dag/dag_source")
+
 
 
 
@@ -200,5 +206,31 @@ async def get_dag_runs_tool(
     
     # Make the request
     response = http_utils.get_json_response(endpoint, params=params)
+    return response
+
+
+async def get_dag_source_tool(
+    file_token: str
+) -> dict:
+    """
+    Get the source code of a DAG using its file token.
+    
+    The file_token is obtained from the get_dag_details response file_token attribute.
+    This endpoint retrieves the actual Python source code of the DAG file.
+    
+    Args:
+        file_token: The encrypted file token obtained from DAG details.
+                   This is a secure token that prevents unauthorized access to non-DAG files.
+    
+    Returns:
+        JSON response containing the DAG source code with the following fields:
+          - content: The actual Python source code of the DAG file
+          - file_token: The file token used to retrieve the source code
+          - dag_id: The DAG ID this source code belongs to (if available)
+    """
+    endpoint = f"dagSources/{file_token}"
+    
+    # Make the request - no additional parameters needed for this endpoint
+    response = http_utils.get_json_response(endpoint)
     return response
 
