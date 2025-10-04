@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "description": "DAG source code response containing the actual Python source code of a DAG",
+  "properties": {
+    "content": {
+      "type": "string",
+      "description": "The actual Python source code of the DAG file"
+    },
+    "file_token": {
+      "type": "string",
+      "description": "The file token used to retrieve the source code"
+    },
+    "dag_id": {
+      "type": "string",
+      "description": "The DAG ID this source code belongs to"
+    }
+  },
+  "required": ["content"]
+}

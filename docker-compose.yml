@@ -53,9 +53,9 @@ services:
     command: webserver
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
+      interval: 20s
+      timeout: 60s
+      retries: 50
 
   airflow-scheduler:
     image: apache/airflow:2.10.5
@@ -114,8 +114,10 @@ services:
       - LOG_LEVEL=info
     volumes:
       - ./airflow-mcp/server.py:/app/server.py
+      - ./airflow-mcp/http_utils.py:/app/http_utils.py
       - ./airflow-mcp/tools:/app/tools
       - ./airflow-mcp/schema:/app/schema
+      - ./airflow-mcp/requirements.txt:/app/requirements.txt
     depends_on:
       airflow-webserver:
         condition: service_healthy

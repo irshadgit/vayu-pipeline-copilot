@@ -24,6 +24,7 @@ def create_dag_troubleshooter_agent() -> LlmAgent:
 - `get_dags`: List and filter DAGs
 - `get_dag`: Get specific DAG information
 - `get_dag_runs`: Get DAG run information
+- `get_dag_source`: Get DAG source code for analysis and debugging
 - `list_task_instances`: List task instances for a specific DAG run
 - `get_task_instance`: Get details of a specific task instance
 - `get_task_instance_tries`: Get all tries for a specific task instance
@@ -31,7 +32,22 @@ def create_dag_troubleshooter_agent() -> LlmAgent:
 - `get_task_instance_log`: Get logs for a specific task instance try
 - `get_health`: Check system health. This also give status of different airflow components
 
-Use these tools to diagnose DAG import errors, runtime issues, performance problems, and configuration issues. Provide clear analysis and actionable solutions.""",
+**DAG SOURCE ANALYSIS CAPABILITIES:**
+- Inspect DAG source code to understand logic and structure
+- Analyze task dependencies and workflow patterns
+- Identify potential issues in DAG implementation
+- Explain what a DAG does and how it works
+- Debug DAG logic problems and suggest improvements
+- Review task configurations and scheduling logic
+
+**WORKFLOW FOR DAG ANALYSIS:**
+1. First, get DAG details using `get_dag` to obtain the file_token
+2. Use `get_dag_source` with the file_token to retrieve the source code
+3. Analyze the source code to understand the DAG's purpose and logic
+4. Cross-reference with runtime data (DAG runs, task instances) if needed
+5. Provide comprehensive analysis and recommendations
+
+Use these tools to diagnose DAG import errors, runtime issues, performance problems, configuration issues, and analyze DAG logic. Provide clear analysis and actionable solutions.""",
         tools=[
             MCPToolset(
                 connection_params=MCP_CONNECTION_PARAMS,
@@ -39,6 +55,7 @@ Use these tools to diagnose DAG import errors, runtime issues, performance probl
                     'get_dags',
                     'get_dag',
                     'get_dag_runs',
+                    'get_dag_source',
                     'list_task_instances',
                     'get_task_instance',
                     'get_task_instance_tries',
@@ -121,6 +138,10 @@ Your primary responsibility is to analyze incoming user requests and delegate th
 - Investigating specific execution attempts and their details
 - Debugging task failures by examining log output
 - Analyzing error messages and stack traces from logs
+- **DAG source code analysis and logic inspection**
+- **Questions about what a DAG does or how it works**
+- **Keywords: "source code", "logic", "what does", "how does", "explain", "analyze", "inspect"**
+- **Understanding DAG structure, task dependencies, and workflow patterns**
 
 **Delegate to AirflowMetadataAgent when:**
 - User wants to retrieve information about DAGs, tasks, or variables
@@ -205,7 +226,7 @@ if __name__ == "__main__":
     print("   - Monitors task instances and execution details")
     print("   - Presents data in user-friendly formats")
     print()
-    print("🔧 Available MCP Tools: get_dags, get_dag, get_dag_runs, list_task_instances, get_task_instance, get_task_instance_tries, get_task_instance_try_details, get_task_instance_log, get_health")
+    print("🔧 Available MCP Tools: get_dags, get_dag, get_dag_runs, get_dag_source, list_task_instances, get_task_instance, get_task_instance_tries, get_task_instance_try_details, get_task_instance_log, get_health")
     print("💬 Ready to help manage and troubleshoot your Airflow workflows!")
     print()
     print("💡 Usage Examples:")
@@ -222,6 +243,11 @@ if __name__ == "__main__":
     print("   - 'Get details of try 3 for task Y' → Delegates to Metadata Agent")
     print("   - 'Show me logs for task Z try 2' → Delegates to Metadata Agent")
     print("   - 'What error is in the logs for my failed task?' → Delegates to TroubleShooter")
+    print("   - 'What does the data_processing DAG do?' → Delegates to TroubleShooter")
+    print("   - 'Show me the source code of my DAG' → Delegates to TroubleShooter")
+    print("   - 'Explain the logic of the ETL pipeline DAG' → Delegates to TroubleShooter")
+    print("   - 'Analyze the task dependencies in my DAG' → Delegates to TroubleShooter")
+    print("   - 'How does the scheduling work in this DAG?' → Delegates to TroubleShooter")
     print()
     print("🏗️  Agent Hierarchy:")
     print("   AirflowOrchestratorAgent (Parent)")
