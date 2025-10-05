@@ -32,6 +32,18 @@ TASK_INSTANCE_TRY_DETAILS_SCHEMA = load_schema("dag/task_instance_try_details")
 
 TASK_INSTANCE_LOG_SCHEMA = load_schema("dag/task_instance_log")
 
+# ============================================================================
+# Clear Task Instances Schema
+# ============================================================================
+
+CLEAR_TASK_INSTANCES_SCHEMA = load_schema("dag/clear_task_instances")
+
+# ============================================================================
+# Task Instance Reference Collection Schema
+# ============================================================================
+
+TASK_INSTANCE_REFERENCE_COLLECTION_SCHEMA = load_schema("dag/task_instance_reference_collection")
+
 
 async def list_task_instances_tool(
     dag_id: str,
@@ -51,7 +63,7 @@ async def list_task_instances_tool(
     queue: Optional[List[str]] = None,
     order_by: Optional[str] = None,
     fields: Optional[List[str]] = None
-) -> str:
+) -> dict:
     """
     List all task instances for a specific DAG run.
     
@@ -199,7 +211,7 @@ async def get_task_instance_tries_tool(
     dag_run_id: str,
     task_id: str,
     fields: Optional[List[str]] = None
-) -> str:
+) -> dict:
     """
     Get all tries for a specific task instance.
     
@@ -372,4 +384,96 @@ async def get_task_instance_log_tool(
     
     # Make the request
     response = http_utils.get_json_response(endpoint, params=params)
+    return response
+
+
+async def clear_task_instances_tool(
+    dag_id: str,
+    dry_run: bool = True,
+    task_ids: Optional[List[str]] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    only_failed: bool = True,
+    only_running: bool = False,
+    include_subdags: Optional[bool] = None,
+    include_parentdag: Optional[bool] = None,
+    reset_dag_runs: bool = True,
+    dag_run_id: Optional[str] = None,
+    include_upstream: bool = False,
+    include_downstream: bool = False,
+    include_future: bool = False,
+    include_past: bool = False
+) -> dict:
+    """
+    Clear a set of task instances associated with the DAG for a specified date range.
+    
+    This tool clears task instances from a DAG, which removes their state and allows them to be
+    re-executed. This is useful for recovering from failures, retrying tasks, or resetting
+    the state of specific tasks in a DAG run.
+    Even if a task instance is success and the prompt is to clear  it, use this tool to clear the task instance.    
+    Use this tool when you need to:
+    - Clear failed tasks to allow them to be retried
+    - Reset the state of specific tasks in a DAG run
+    - Clear running tasks that are stuck or problematic
+    - Reset multiple tasks across different DAG runs
+    - Perform dry runs to see what tasks would be cleared
+    - Clear tasks with specific execution date ranges
+    - Clear tasks in subdags or parent DAGs
+    
+    Args:
+        dag_id: The DAG ID to clear task instances for (required)
+        dry_run: If True, don't actually clear tasks, just return what would be cleared (default: True)
+        task_ids: List of specific task IDs to clear (optional)
+        start_date: The minimum execution date to clear (ISO 8601 format, optional)
+        end_date: The maximum execution date to clear (ISO 8601 format, optional)
+        only_failed: Only clear failed tasks (default: True)
+        only_running: Only clear running tasks (default: False)
+        include_subdags: Clear tasks in subdags and external tasks (optional)
+        include_parentdag: Clear tasks in the parent DAG of subdags (optional)
+        reset_dag_runs: Set state of DAG runs to RUNNING (optional). Default is True.
+        dag_run_id: The specific DAG run ID to clear tasks for (optional)
+        include_upstream: If True, upstream tasks are also affected (default: False)
+        include_downstream: If True, downstream tasks are also affected (default: False)
+        include_future: If True, also clear tasks on future DAG runs (default: False)
+        include_past: If True, also clear tasks on past DAG runs (default: False)
+    
+    Returns:
+        JSON response containing a collection of task instance references that were cleared
+        (or would be cleared in dry run mode). The response includes:
+        - task_instances: Array of task instance reference objects containing:
+          - task_id: Unique identifier for the task within the DAG
+          - dag_id: The DAG ID this task instance belongs to
+          - dag_run_id: The DAG run ID this task instance belongs to
+          - execution_date: Logical execution date of the task instance
+    """
+    endpoint = f"dags/{dag_id}/clearTaskInstances"
+    
+    # Build request body
+    body: Dict[str, Union[str, bool, List[str]]] = {
+        "dry_run": dry_run,
+        "only_failed": only_failed,
+        "only_running": only_running,
+        "include_upstream": include_upstream,
+        "include_downstream": include_downstream,
+        "include_future": include_future,
+        "include_past": include_past,
+        "reset_dag_runs": reset_dag_runs
+    }
+    
+    # Add optional parameters if provided
+    if task_ids:
+        body["task_ids"] = task_ids
+    if start_date:
+        body["start_date"] = start_date
+    if end_date:
+        body["end_date"] = end_date
+    if include_subdags is not None:
+        body["include_subdags"] = include_subdags
+    if include_parentdag is not None:
+        body["include_parentdag"] = include_parentdag
+    if dag_run_id:
+        body["dag_run_id"] = dag_run_id
+    
+    # Make the request
+    response = http_utils.get_json_response(endpoint, method="POST", body=body)
     return response

@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "description": "A connection object containing connection details",
+  "properties": {
+    "connection_id": {
+      "type": "string",
+      "description": "The connection ID"
+    },
+    "conn_type": {
+      "type": "string",
+      "description": "Connection type (e.g., postgres, mysql, http, etc.)"
+    },
+    "host": {
+      "type": ["string", "null"],
+      "description": "Host of the connection"
+    },
+    "login": {
+      "type": ["string", "null"],
+      "description": "Login of the connection"
+    },
+    "schema": {
+      "type": ["string", "null"],
+      "description": "Schema of the connection"
+    },
+    "port": {
+      "type": ["integer", "null"],
+      "description": "Port of the connection"
+    },
+    "password": {
+      "type": ["string", "null"],
+      "description": "Password of the connection"
+    },
+    "extra": {
+      "type": ["string", "null"],
+      "description": "Extra metadata for the connection"
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "Description of the connection"
+    }
+  },
+  "required": ["connection_id", "conn_type"]
+}
