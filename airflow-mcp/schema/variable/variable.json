@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "description": "A variable object containing variable details",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "The variable key"
+    },
+    "value": {
+      "type": ["string", "null"],
+      "description": "The variable value (may be masked if sensitive)"
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "Description of the variable"
+    },
+    "is_encrypted": {
+      "type": ["boolean", "null"],
+      "description": "Whether the variable is encrypted"
+    }
+  },
+  "required": ["key"]
+}

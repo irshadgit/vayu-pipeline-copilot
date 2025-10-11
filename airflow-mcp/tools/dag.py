@@ -52,7 +52,7 @@ async def get_dags_tool(
     only_active: bool = True,
     paused: Optional[bool] = None,
     dag_id_pattern: Optional[str] = None
-) -> str:
+) -> dict:
     """
     Get all DAGs with optional filtering and pagination.
     
@@ -134,7 +134,7 @@ async def get_dag_runs_tool(
     state: Optional[List[str]] = None,
     order_by: Optional[str] = None,
     fields: Optional[List[str]] = None
-) -> str:
+) -> dict:
     """
     Get DAG runs for a specific DAG or all DAGs.
     
@@ -217,6 +217,8 @@ async def get_dag_source_tool(
     
     The file_token is obtained from the get_dag_details response file_token attribute.
     This endpoint retrieves the actual Python source code of the DAG file.
+    Refer this tool to find information about the dag and tasks. Usually there will be description and doc_md in the dag file.
+    This tool will be useful when the user asks about the dag and tasks details and also for error analysis and troubleshooting.
     
     Args:
         file_token: The encrypted file token obtained from DAG details.

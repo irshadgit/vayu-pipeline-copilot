@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "description": "A collection of connections with pagination",
+  "properties": {
+    "connections": {
+      "type": "array",
+      "items": {
+        "$ref": "connection.json"
+      },
+      "description": "List of connections"
+    },
+    "total_entries": {
+      "type": "integer",
+      "description": "Total number of connections"
+    }
+  },
+  "required": ["connections", "total_entries"]
+}

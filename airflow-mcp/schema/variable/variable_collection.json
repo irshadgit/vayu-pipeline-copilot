@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "description": "A collection of variables with pagination",
+  "properties": {
+    "variables": {
+      "type": "array",
+      "items": {
+        "$ref": "variable.json"
+      },
+      "description": "List of variables"
+    },
+    "total_entries": {
+      "type": "integer",
+      "description": "Total number of variables"
+    }
+  },
+  "required": ["variables", "total_entries"]
+}

@@ -1,0 +1,21 @@
+student_id,name,age,grade,subject,score,enrollment_date
+1,Alice Johnson,20,A,Mathematics,95,2023-09-01
+2,Bob Smith,19,B,Mathematics,87,2023-09-01
+3,Carol Davis,21,A,Physics,92,2023-09-01
+4,David Wilson,20,B,Physics,78,2023-09-01
+5,Emma Brown,19,A,Chemistry,89,2023-09-01
+6,Frank Miller,22,C,Mathematics,72,2023-09-01
+7,Grace Lee,20,A,Chemistry,94,2023-09-01
+8,Henry Taylor,21,B,Physics,85,2023-09-01
+9,Ivy Chen,19,A,Mathematics,96,2023-09-01
+10,Jack Anderson,20,C,Chemistry,68,2023-09-01
+11,Kate Rodriguez,21,B,Mathematics,82,2023-09-01
+12,Liam O'Connor,19,A,Physics,91,2023-09-01
+13,Maya Patel,20,B,Chemistry,79,2023-09-01
+14,Noah Kim,22,C,Mathematics,71,2023-09-01
+15,Olivia Garcia,19,A,Physics,93,2023-09-01
+16,Paul Martinez,20,B,Mathematics,84,2023-09-01
+17,Quinn Thompson,21,A,Chemistry,90,2023-09-01
+18,Rachel White,19,C,Physics,65,2023-09-01
+19,Sam Johnson,20,B,Mathematics,81,2023-09-01
+20,Tina Zhang,21,A,Chemistry,97,2023-09-01

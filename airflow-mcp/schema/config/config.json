@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "description": "Configuration response containing sections and options",
+  "properties": {
+    "sections": {
+      "type": "array",
+      "description": "List of configuration sections",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the configuration section"
+          },
+          "options": {
+            "type": "array",
+            "description": "List of configuration options in this section",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "description": "Configuration option key"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Configuration option value"
+                }
+              },
+              "required": ["key", "value"]
+            }
+          }
+        },
+        "required": ["name", "options"]
+      }
+    }
+  },
+  "required": ["sections"]
+}

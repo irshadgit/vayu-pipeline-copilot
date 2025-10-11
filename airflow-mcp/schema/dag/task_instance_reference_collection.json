@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "description": "Collection of task instance references",
+  "properties": {
+    "task_instances": {
+      "type": "array",
+      "items": { "$ref": "./task_instance_reference.json" },
+      "description": "Array of task instance reference objects"
+    }
+  },
+  "required": ["task_instances"]
+}
