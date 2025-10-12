@@ -129,7 +129,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
-
   adk_agent:
     build:
       context: ./adk_agent
@@ -138,9 +137,11 @@ services:
       - "8005:8080"
     environment:
       - PYTHONPATH=/app
-      - MCP_HOST=airflow-mcp-server
-      - MCP_PORT=3000
+      - AIRFLOW_MCP_HOST=${AIRFLOW_MCP_HOST:-airflow-mcp-server}
+      - AIRFLOW_MCP_PORT=${AIRFLOW_MCP_PORT:-3000}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GIT_PAT_TOKEN=${GITHUB_PAT_TOKEN}
+      - DAG_REPOSITORY=${DAG_REPOSITORY}
     volumes:
       - ./adk_agent/vayu_agent:/app/vayu_agent
     depends_on:

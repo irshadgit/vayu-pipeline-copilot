@@ -1,15 +1,24 @@
 import os
 from google.adk.agents import LlmAgent
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
-from google.adk.tools.mcp_tool.mcp_session_manager import SseServerParams
+from google.adk.tools.mcp_tool.mcp_toolset import SseConnectionParams, StreamableHTTPConnectionParams
 
 
 # MCP server configuration
-MCP_HOST = os.getenv("MCP_HOST", "localhost")
-MCP_PORT = int(os.getenv("MCP_PORT", "3000"))
-
+MCP_HOST = os.getenv("AIRFLOW_MCP_HOST", "localhost")
+MCP_PORT = int(os.getenv("AIRFLOW_MCP_PORT", "3000"))
 # Common MCP connection parameters
-MCP_CONNECTION_PARAMS = SseServerParams(url=f"http://{MCP_HOST}:{MCP_PORT}/sse")
+MCP_CONNECTION_PARAMS = SseConnectionParams(url=f"http://{MCP_HOST}:{MCP_PORT}/sse")
+
+# GitHub MCP configuration
+GITHUB_MCP_URL = "https://api.githubcopilot.com/mcp/"
+GIT_PAT_TOKEN = os.getenv("GIT_PAT_TOKEN")
+DAG_REPOSITORY = os.getenv("DAG_REPOSITORY")
+# GitHub MCP connection parameters
+GITHUB_MCP_CONNECTION_PARAMS = StreamableHTTPConnectionParams(
+    url=GITHUB_MCP_URL,
+    headers={"Authorization": f"Bearer {GIT_PAT_TOKEN}"} if GIT_PAT_TOKEN else {}
+)
 
 def create_dag_troubleshooter_agent() -> LlmAgent:
     """
@@ -180,6 +189,91 @@ Use these tools to retrieve and present Airflow information in a clear, user-fri
         ]
     )
 
+def create_pipeline_mechanic_agent() -> LlmAgent:
+    """
+    Creates the PipelineMechanic Agent - specializes in version control of DAG git repository.
+    """
+    # Create dynamic instruction with DAG repository only
+    dag_repo = DAG_REPOSITORY or "your-org/your-repo"
+    
+    instruction = f"""You are the PipelineMechanic Agent, specialized in version control and git workflow management for DAG repositories.
+
+📋 **TARGET REPOSITORY:**
+- Repository: `{dag_repo}`
+
+🔧 **TOOLS AVAILABLE:**
+- `search_code`: Search for DAG files in the repository
+- `create_branch`: Create a new branch for changes
+- `create_or_update_file`: Create or update DAG file with current code
+- `create_pull_request`: Create a pull request for DAG changes
+- `get_dag_source`: Get DAG source code from Airflow (via DAG Manager Agent)
+- `get_dag`: Get DAG information to identify the file
+
+**VERSION CONTROL WORKFLOW:**
+1. **DAG Discovery**: Use `get_dag` to get DAG information and identify the file_token
+2. **Source Retrieval**: Use `get_dag_source` with file_token to get current DAG code
+3. **Repository Search**: Use `search_code` to find the DAG file in the repository
+   - Search pattern: `repo:{dag_repo} path:*.py` (or specific file pattern)
+4. **Branch Creation**: Create a new branch for the changes
+5. **File Update**: Use `create_or_update_file` to update the DAG file with current code
+6. **Pull Request**: Create a PR with the updated DAG file and proper description
+
+**SEARCH PATTERNS:**
+- General DAG search: `repo:{dag_repo} path:*.py`
+- Specific file search: `repo:{dag_repo} path:dag_file.py`
+- Pattern examples:
+  - `repo:irshadgit/dbt-spark-iceberg path:*.py`
+  - `repo:{dag_repo} path:dag_file.py`
+
+**GIT WORKFLOW CAPABILITIES:**
+- Search and locate DAG files in the repository
+- Create feature branches for DAG updates
+- Generate pull requests with current DAG code
+- Handle version control workflow
+- Maintain proper git history and commit messages
+
+**SIMPLIFIED WORKFLOW:**
+1. Retrieve current DAG code from Airflow using `get_dag_source`
+2. Search for the corresponding file in the repository using `search_code`
+3. Create a new branch for the changes
+4. Update the DAG file with current code using `create_or_update_file`
+5. Create a pull request with the updated DAG file
+
+**PR CREATION WORKFLOW:**
+1. Create a descriptive branch name (e.g., `update-dag-my-dag-20241201`)
+2. Generate a comprehensive PR title
+3. Create detailed PR description including:
+   - Summary of changes
+   - DAG functionality description
+   - Testing recommendations
+   - Impact analysis
+4. Set appropriate labels and reviewers
+5. Link to related issues if applicable
+
+**INTEGRATION WITH DAG MANAGER:**
+- Use DAG Manager Agent tools to get current DAG source code
+- Coordinate with other agents for comprehensive DAG management
+- Directly create pull requests with current DAG code
+
+Use these tools to maintain proper version control of DAG files and create pull requests with current DAG code from Airflow."""
+
+    return LlmAgent(
+        name="PipelineMechanicAgent",
+        model="gemini-2.0-flash",
+        instruction=instruction,
+        tools=[
+            MCPToolset(
+                connection_params=GITHUB_MCP_CONNECTION_PARAMS,
+                tool_filter=[
+                    'search_code',
+                    'create_branch',
+                    'create_or_update_file',
+                    'create_pull_request'
+                ]
+            )
+        ]
+    )
+
 def create_airflow_orchestrator_agent() -> LlmAgent:
     """
     Creates the main Airflow Orchestrator Agent with specialized sub-agents.
@@ -187,6 +281,7 @@ def create_airflow_orchestrator_agent() -> LlmAgent:
     # Create specialized sub-agents
     dag_troubleshooter = create_dag_troubleshooter_agent()
     metadata_agent = create_airflow_metadata_agent()
+    pipeline_mechanic = create_pipeline_mechanic_agent()
     
     # Create the orchestrator with sub-agents
     orchestrator = LlmAgent(
@@ -259,6 +354,16 @@ Your primary responsibility is to analyze incoming user requests and delegate th
 - **Performing dry runs to see what tasks would be cleared**
 - **Clearing tasks when requested as an informational operation**
 
+**Delegate to PipelineMechanicAgent when:**
+- User wants to manage version control of DAG files
+- Keywords: "version control", "git", "repository", "commit", "pull request", "PR", "branch"
+- Creating pull requests for DAG changes
+- Managing DAG file updates in version control
+- Git workflow management for DAG files
+- **Keywords: "sync dag", "update repository", "commit changes", "create PR for dag"**
+- **Keywords: "version control", "git workflow", "branch for dag", "merge dag changes"**
+- **Keywords: "dag repository", "create pull request", "update DAG in git"**
+
 **DELEGATION RULES:**
 1. Always analyze the user's intent before delegating
 2. Choose the most appropriate sub-agent based on the request type
@@ -275,11 +380,13 @@ Your primary responsibility is to analyze incoming user requests and delegate th
 **AVAILABLE SUB-AGENTS:**
 - DagTroubleShooterAgent: Expert in diagnosing and resolving DAG issues
 - AirflowMetadataAgent: Specialist in retrieving and presenting Airflow information
+- PipelineMechanicAgent: Expert in version control and git workflow management for DAG repositories
 
 Use your sub-agents effectively to provide comprehensive Airflow management assistance.""",
         sub_agents=[
             dag_troubleshooter,
-            metadata_agent
+            metadata_agent,
+            pipeline_mechanic
         ]
     )
     
@@ -294,6 +401,7 @@ root_agent = airflow_orchestrator
 # Access to sub-agents for direct use if needed
 dag_troubleshooter_agent = None
 airflow_metadata_agent = None
+pipeline_mechanic_agent = None
 
 # Extract sub-agents for direct access
 for sub_agent in airflow_orchestrator.sub_agents:
@@ -301,6 +409,8 @@ for sub_agent in airflow_orchestrator.sub_agents:
         dag_troubleshooter_agent = sub_agent
     elif sub_agent.name == "AirflowMetadataAgent":
         airflow_metadata_agent = sub_agent
+    elif sub_agent.name == "PipelineMechanicAgent":
+        pipeline_mechanic_agent = sub_agent
 
 # Legacy aliases for backward compatibility
 troubleshooter_agent = dag_troubleshooter_agent
@@ -331,7 +441,17 @@ if __name__ == "__main__":
     print("   - Clears task instances for informational purposes")
     print("   - Presents data in user-friendly formats")
     print()
-    print("🔧 Available MCP Tools: get_dags, get_dag, get_dag_runs, get_dag_source, list_task_instances, get_task_instance, get_task_instance_tries, get_task_instance_try_details, get_task_instance_log, clear_task_instances, get_health, get_connections, get_connection, create_connection, update_connection, delete_connection, test_connection, get_configs, get_config, get_variables, get_variable, create_variable, update_variable, delete_variable")
+    print("🔧 **PIPELINE MECHANIC SUB-AGENT**")
+    print("   - Manages version control of DAG git repository")
+    print("   - Creates feature branches for DAG updates")
+    print("   - Updates DAG files with current code from Airflow")
+    print("   - Generates pull requests with updated DAG files")
+    print("   - Handles complete git workflow for DAG file management")
+    print("   - Uses Airflow get_dag_source for current DAG code")
+    print()
+    print("🔧 Available MCP Tools:")
+    print("   Airflow Tools: get_dags, get_dag, get_dag_runs, get_dag_source, list_task_instances, get_task_instance, get_task_instance_tries, get_task_instance_try_details, get_task_instance_log, clear_task_instances, get_health, get_connections, get_connection, create_connection, update_connection, delete_connection, test_connection, get_configs, get_config, get_variables, get_variable, create_variable, update_variable, delete_variable")
+    print("   GitHub Tools: search_code, create_branch, create_or_update_file, create_pull_request")
     print("💬 Ready to help manage and troubleshoot your Airflow workflows!")
     print()
     print("💡 Usage Examples:")
@@ -372,8 +492,14 @@ if __name__ == "__main__":
     print("   - 'Clear stuck running tasks' → Delegates to TroubleShooter")
     print("   - 'Show me what tasks would be cleared' → Delegates to Metadata Agent")
     print("   - 'Clear tasks in DAG run X' → Delegates to TroubleShooter")
+    print("   - 'Create a PR for my DAG changes' → Delegates to PipelineMechanic")
+    print("   - 'Update repository with current DAG' → Delegates to PipelineMechanic")
+    print("   - 'Create a branch for DAG updates' → Delegates to PipelineMechanic")
+    print("   - 'Sync DAG with git repository' → Delegates to PipelineMechanic")
+    print("   - 'Version control for DAG files' → Delegates to PipelineMechanic")
     print()
     print("🏗️  Agent Hierarchy:")
     print("   AirflowOrchestratorAgent (Parent)")
     print("   ├── DagTroubleShooterAgent (Sub-agent)")
-    print("   └── AirflowMetadataAgent (Sub-agent)")
+    print("   ├── AirflowMetadataAgent (Sub-agent)")
+    print("   └── PipelineMechanicAgent (Sub-agent)")

@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  github-mcp-server:
+    image: ghcr.io/github/github-mcp-server:latest
+    ports:
+      - "3001:3001"
+    environment:
+      - GITHUB_PERSONAL_ACCESS_TOKEN=${GIT_PAT_TOKEN}
+    command: ["--port", "3001", "--sse"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  airflow-mcp-server:
+    # Add your Airflow MCP server configuration here
+    # This is a placeholder for the Airflow MCP server
+    image: your-airflow-mcp-server:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - AIRFLOW_API_URL=${AIRFLOW_API_URL}
+    restart: unless-stopped
