@@ -1,0 +1,69 @@
+{
+  "name": "PipelineMechanicAgent",
+  "description": "Specialized agent for version control and git workflow management for DAG repositories",
+  "version": "1.0.0",
+  "url": "http://vayu-agents:8001/a2a/pipeline_mechanic",
+  "capabilities": {
+    "DAG version control": "Manage version control of DAG files",
+    "Git workflow management": "Handle git workflows and operations",
+    "Repository file operations": "Perform file operations in repositories",
+    "Pull request creation": "Create and manage pull requests",
+    "Branch management": "Manage git branches",
+    "DAG synchronization": "Synchronize DAG files with repositories"
+  },
+  "defaultInputModes": ["text"],
+  "defaultOutputModes": ["text"],
+  "skills": [
+    {
+      "id": "version_control",
+      "name": "version_control",
+      "description": "Manage DAG file version control",
+      "tags": ["git", "version_control", "dag", "management"]
+    },
+    {
+      "id": "git_workflow",
+      "name": "git_workflow",
+      "description": "Handle git operations and workflows",
+      "tags": ["git", "workflow", "operations", "automation"]
+    },
+    {
+      "id": "file_operations",
+      "name": "file_operations",
+      "description": "Perform repository file operations",
+      "tags": ["git", "files", "repository", "operations"]
+    },
+    {
+      "id": "pull_request_management",
+      "name": "pull_request_management",
+      "description": "Create and manage pull requests",
+      "tags": ["git", "pull_requests", "github", "management"]
+    },
+    {
+      "id": "branch_operations",
+      "name": "branch_operations",
+      "description": "Manage git branches",
+      "tags": ["git", "branches", "operations", "management"]
+    },
+    {
+      "id": "dag_synchronization",
+      "name": "dag_synchronization",
+      "description": "Sync DAG files with repositories",
+      "tags": ["git", "dag", "synchronization", "airflow"]
+    }
+  ],
+  "endpoints": {
+    "main": "http://localhost:8003"
+  },
+  "tools": [
+    "search_code",
+    "create_branch",
+    "create_or_update_file",
+    "create_pull_request",
+    "get_dag",
+    "get_dag_source"
+  ],
+  "dependencies": [
+    "DagTroubleShooterAgent",
+    "AirflowMetadataAgent"
+  ]
+}

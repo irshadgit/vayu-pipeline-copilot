@@ -1,0 +1,77 @@
+{
+  "name": "DagTroubleShooterAgent",
+  "description": "Specialized agent for diagnosing and resolving Apache Airflow DAG issues",
+  "version": "1.0.0",
+  "url": "http://vayu-agents:8001/a2a/dag_troubleshooter",
+  "capabilities": {
+    "DAG source code analysis": "Analyze and debug DAG source code",
+    "Task instance management": "Manage and clear task instances",
+    "Connection troubleshooting": "Diagnose and fix connection issues",
+    "Configuration management": "Manage Airflow configurations",
+    "Variable management": "Handle Airflow variables",
+    "DAG debugging and diagnostics": "Comprehensive DAG troubleshooting"
+  },
+  "defaultInputModes": ["text"],
+  "defaultOutputModes": ["text"],
+  "skills": [
+    {
+      "id": "dag_analysis",
+      "name": "dag_analysis",
+      "description": "Analyze DAG structure and logic",
+      "tags": ["airflow", "dag", "analysis", "debugging"]
+    },
+    {
+      "id": "task_management",
+      "name": "task_management",
+      "description": "Manage task instances and execution",
+      "tags": ["airflow", "tasks", "management", "execution"]
+    },
+    {
+      "id": "connection_diagnostics",
+      "name": "connection_diagnostics",
+      "description": "Troubleshoot connection issues",
+      "tags": ["airflow", "connections", "troubleshooting", "diagnostics"]
+    },
+    {
+      "id": "configuration_management",
+      "name": "configuration_management",
+      "description": "Handle system configurations",
+      "tags": ["airflow", "configuration", "management", "system"]
+    },
+    {
+      "id": "variable_operations",
+      "name": "variable_operations",
+      "description": "Manage Airflow variables",
+      "tags": ["airflow", "variables", "operations", "management"]
+    }
+  ],
+  "endpoints": {
+    "main": "http://localhost:8001"
+  },
+  "tools": [
+    "get_dags",
+    "get_dag",
+    "get_dag_runs",
+    "get_dag_source",
+    "list_task_instances",
+    "get_task_instance",
+    "get_task_instance_tries",
+    "get_task_instance_try_details",
+    "get_task_instance_log",
+    "clear_task_instances",
+    "get_health",
+    "get_connections",
+    "get_connection",
+    "create_connection",
+    "update_connection",
+    "delete_connection",
+    "test_connection",
+    "get_configs",
+    "get_config",
+    "get_variables",
+    "get_variable",
+    "create_variable",
+    "update_variable",
+    "delete_variable"
+  ]
+}
