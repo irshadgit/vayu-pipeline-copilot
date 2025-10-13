@@ -1,0 +1,82 @@
+{
+  "name": "AirflowMetadataAgent",
+  "description": "Specialized agent for retrieving and presenting Airflow metadata and information",
+  "version": "1.0.0",
+  "url": "http://vayu-agents:8001/a2a/airflow_metadata",
+  "capabilities": {
+    "DAG information retrieval": "Retrieve comprehensive DAG information",
+    "Task instance monitoring": "Monitor task instances and execution",
+    "Connection management": "Manage Airflow connections",
+    "Configuration management": "Handle system configurations",
+    "Variable management": "Manage Airflow variables",
+    "System health monitoring": "Monitor system health and status"
+  },
+  "defaultInputModes": ["text"],
+  "defaultOutputModes": ["text"],
+  "skills": [
+    {
+      "id": "metadata_retrieval",
+      "name": "metadata_retrieval",
+      "description": "Retrieve and present Airflow metadata",
+      "tags": ["airflow", "metadata", "retrieval"]
+    },
+    {
+      "id": "task_monitoring",
+      "name": "task_monitoring",
+      "description": "Monitor task execution and status",
+      "tags": ["airflow", "tasks", "monitoring"]
+    },
+    {
+      "id": "connection_management",
+      "name": "connection_management",
+      "description": "Manage connection configurations",
+      "tags": ["airflow", "connections", "management"]
+    },
+    {
+      "id": "configuration_handling",
+      "name": "configuration_handling",
+      "description": "Handle system configurations",
+      "tags": ["airflow", "configuration", "system"]
+    },
+    {
+      "id": "variable_operations",
+      "name": "variable_operations",
+      "description": "Manage Airflow variables",
+      "tags": ["airflow", "variables", "operations"]
+    },
+    {
+      "id": "health_monitoring",
+      "name": "health_monitoring",
+      "description": "Monitor system health",
+      "tags": ["airflow", "health", "monitoring"]
+    }
+  ],
+  "endpoints": {
+    "main": "http://localhost:8002"
+  },
+  "tools": [
+    "get_dags",
+    "get_dag",
+    "get_dag_runs",
+    "list_task_instances",
+    "get_task_instance",
+    "get_task_instance_tries",
+    "get_task_instance_try_details",
+    "get_task_instance_log",
+    "clear_task_instances",
+    "get_health",
+    "get_connections",
+    "get_connection",
+    "create_connection",
+    "update_connection",
+    "delete_connection",
+    "test_connection",
+    "get_configs",
+    "get_config",
+    "get_variables",
+    "get_variable",
+    "create_variable",
+    "update_variable",
+    "delete_variable"
+  ]
+}

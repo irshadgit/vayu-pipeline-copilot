@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Main Vayu Orchestrator Agent
+  vayu-orchestrator:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - A2A_HOST=vayu-agents
+      - A2A_PORT=8001
+    command: ["adk", "web", "vayu_agent"]
+    depends_on:
+      - vayu-agents
+    restart: unless-stopped
+
+  # A2A Host - All Remote Agents
+  vayu-agents:
+    build: .
+    ports:
+      - "8001:8001"
+    environment:
+      - AIRFLOW_MCP_HOST=airflow-mcp-server
+      - AIRFLOW_MCP_PORT=3000
+      - GIT_PAT_TOKEN=${GIT_PAT_TOKEN}
+      - DAG_REPOSITORY=${DAG_REPOSITORY}
+    command: ["adk", "api_server", "--a2a", "--port", "8001", "vayu_agent/remote_agents"]
+    depends_on:
+      - airflow-mcp-server
+    restart: unless-stopped
+
+  # Airflow MCP Server
+  airflow-mcp-server:
+    image: your-airflow-mcp-server:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - AIRFLOW_API_URL=${AIRFLOW_API_URL}
+    restart: unless-stopped
+

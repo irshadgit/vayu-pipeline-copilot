@@ -1,7 +1,7 @@
 # Google ADK Agent Requirements
 
 # Core ADK dependency
-google-adk==1.14.1
+google-adk[a2a]==1.16.0
 
 # MCP (Model Context Protocol) support
 mcp>=1.0.0
