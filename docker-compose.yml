@@ -182,5 +182,25 @@ services:
       retries: 3
       start_period: 5s
 
+  students-api:
+    build:
+      context: ./students_api
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    environment:
+      - DATABASE_URL=postgresql://airflow:airflow@postgres:5432/students_db
+    volumes:
+      - ./students_api/app.py:/app/app.py
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
 volumes:
   postgres-data:
