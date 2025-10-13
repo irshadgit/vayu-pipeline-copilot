@@ -400,7 +400,7 @@ async def clear_task_instances_tool(
     reset_dag_runs: bool = True,
     dag_run_id: Optional[str] = None,
     include_upstream: bool = False,
-    include_downstream: bool = False,
+    include_downstream: bool = True,
     include_future: bool = False,
     include_past: bool = False
 ) -> dict:

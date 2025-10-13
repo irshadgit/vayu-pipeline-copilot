@@ -37,7 +37,9 @@ services:
       retries: 50
 
   airflow-webserver:
-    image: apache/airflow:2.10.5
+    build:
+      context: ./airflow_home
+      dockerfile: Dockerfile
     depends_on:
       - postgres
       - redis
@@ -58,7 +60,9 @@ services:
       retries: 50
 
   airflow-scheduler:
-    image: apache/airflow:2.10.5
+    build:
+      context: ./airflow_home
+      dockerfile: Dockerfile
     depends_on:
       - airflow-webserver
     environment:
@@ -70,7 +74,9 @@ services:
     command: scheduler
 
   airflow-worker:
-    image: apache/airflow:2.10.5
+    build:
+      context: ./airflow_home
+      dockerfile: Dockerfile
     depends_on:
       - airflow-scheduler
     environment:
@@ -82,7 +88,9 @@ services:
     command: celery worker
 
   airflow-init:
-    image: apache/airflow:2.10.5
+    build:
+      context: ./airflow_home
+      dockerfile: Dockerfile
     depends_on:
       - postgres
     environment:
@@ -148,6 +156,26 @@ services:
       - airflow-webserver
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  students-api:
+    build:
+      context: ./students_api
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    environment:
+      - DATABASE_URL=postgresql://airflow:airflow@postgres:5432/students_db
+    volumes:
+      - ./students_api/app.py:/app/app.py
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
