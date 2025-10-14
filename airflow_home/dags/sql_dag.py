@@ -25,20 +25,6 @@ dag = DAG(
     tags=['postgres', 'students'],
 )
 
-# Task 1: Create database if not exists
-create_database = SQLExecuteQueryOperator(
-    task_id='create_database',
-    conn_id='postgres_students',
-    sql="CREATE DATABASE students_db;",
-    autocommit=True,
-    doc_md="""
-    Creates a PostgreSQL database named 'students_db' if it doesn't already exist.
-    This is the first task in the pipeline and ensures the required database is available.
-    Uses autocommit to execute the CREATE DATABASE command outside a transaction block.
-    Note: You may need to handle "database already exists" errors at the connection level.
-    """,
-    dag=dag,
-)
 
 # Task 2: Create table if not exists
 create_table = SQLExecuteQueryOperator(
@@ -81,7 +67,7 @@ upload_file_task = HttpOperator(
 run_custom_query = SQLExecuteQueryOperator(
     task_id='run_custom_query',
     conn_id='postgres_students',
-    sql="{{ var.value.student_query }}",
+    sql="SELECT * FROM students LIMIT 10",
     doc_md="""
     Executes a custom SQL query stored in the Airflow Variable 'student_query'.
     Allows dynamic query execution without code changes.
@@ -91,4 +77,4 @@ run_custom_query = SQLExecuteQueryOperator(
 )
 
 # Set task dependencies
-create_database >> create_table >> upload_file_task >> run_custom_query
+create_table >> upload_file_task >> run_custom_query

@@ -28,7 +28,7 @@ def create_airflow_metadata_agent() -> LlmAgent:
 - `get_task_instance_tries`: Get all tries for a specific task instance
 - `get_task_instance_try_details`: Get detailed information about a specific try
 - `get_task_instance_log`: Get logs for a specific task instance try
-- `clear_task_instances`: Clear a set of task instances for retry or reset
+- `clear_task_instances`: Clear a set of task instances for retry or reset. When clearing failed tasks always clear downstream tasks and reset dag run as well
 - `get_health`: Check system health. This also gives the status of different airflow components
 - `get_connections`: List and filter connections
 - `get_connection`: Get specific connection details

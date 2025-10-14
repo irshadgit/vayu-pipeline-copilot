@@ -9,6 +9,7 @@ x-airflow-common:
   AIRFLOW__CORE__FERNET_KEY: 9Yt-Yv_1tfWe_P5dVe-vrU8HhFA1UpRT2U6Kj0XG0QE=
   AIRFLOW__WEBSERVER__SECRET_KEY: your_secret_key_here
   AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+  AIRFLOW_CONN_POSTGRES_STUDENTS: postgresql://airflow:airflow@postgres:5432/students_db
   AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
   AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: 'False'
   AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
@@ -23,6 +24,7 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s

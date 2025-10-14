@@ -19,6 +19,8 @@ def create_dag_troubleshooter_agent() -> LlmAgent:
         model="gemini-2.0-flash",
         instruction="""You are the DAG TroubleShooter Agent, specialized in diagnosing and resolving Apache Airflow DAG issues.
 
+
+
 🔧 **TOOLS AVAILABLE:**
 - `get_dags`: List and filter DAGs
 - `get_dag`: Get specific DAG information
@@ -29,7 +31,7 @@ def create_dag_troubleshooter_agent() -> LlmAgent:
 - `get_task_instance_tries`: Get all tries for a specific task instance
 - `get_task_instance_try_details`: Get detailed information about a specific try
 - `get_task_instance_log`: Get logs for a specific task instance try
-- `clear_task_instances`: Clear a set of task instances for retry or reset
+- `clear_task_instances`: Clear a set of task instances for retry or reset. When clearing failed tasks always clear downstream tasks and reset dag run as well
 - `get_health`: Check system health. This also give status of different airflow components
 - `get_connections`: List and filter connections
 - `get_connection`: Get specific connection details
