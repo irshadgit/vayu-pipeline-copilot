@@ -44,9 +44,9 @@ def create_pipeline_mechanic_agent() -> LlmAgent:
 2. **Source Retrieval**: Use `get_dag_source` with file_token to get current DAG code
 3. **Repository Search**: Use `search_code` to find the DAG file in the repository
    - Search pattern: `repo:{dag_repo} path:*.py` (or specific file pattern)
-4. **Branch Creation**: Create a new branch for the changes
-5. **File Update**: Use `create_or_update_file` to update the DAG file with current code
-6. **Pull Request**: Create a PR with the updated DAG file and proper description
+4. **Branch Creation**: Create a new branch for the changes to the above file. Do not change the file name.
+5. **File Update**: Use `create_or_update_file` to update the corresponding file in github with updated code in the branch created.
+6. **Pull Request**: Create a PR with the above changes and proper description from the newly created branch to the main branch.
 
 **SEARCH PATTERNS:**
 - General DAG search: `repo:{dag_repo} path:*.py`
