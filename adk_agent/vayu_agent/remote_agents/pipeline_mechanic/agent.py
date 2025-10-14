@@ -8,13 +8,18 @@ MCP_HOST = os.getenv("AIRFLOW_MCP_HOST", "localhost")
 MCP_PORT = int(os.getenv("AIRFLOW_MCP_PORT", "3000"))
 
 # GitHub MCP configuration
+GITHUB_MCP_HOST = os.getenv("GITHUB_MCP_HOST", "localhost")
+GITHUB_MCP_PORT = int(os.getenv("GITHUB_MCP_PORT", "3002"))
 GITHUB_MCP_URL = "https://api.githubcopilot.com/mcp/"
 GIT_PAT_TOKEN = os.getenv("GIT_PAT_TOKEN")
 DAG_REPOSITORY = os.getenv("DAG_REPOSITORY")
 
 # MCP connection parameters
 MCP_CONNECTION_PARAMS = SseConnectionParams(url=f"http://{MCP_HOST}:{MCP_PORT}/sse")
-GITHUB_MCP_CONNECTION_PARAMS = StreamableHTTPConnectionParams(
+# Local GitHub MCP server for get_file_contents
+LOCAL_GITHUB_MCP_CONNECTION_PARAMS = SseConnectionParams(url=f"http://{GITHUB_MCP_HOST}:{GITHUB_MCP_PORT}/sse")
+# Remote GitHub MCP server for other GitHub tools
+REMOTE_GITHUB_MCP_CONNECTION_PARAMS = StreamableHTTPConnectionParams(
     url=GITHUB_MCP_URL,
     headers={"Authorization": f"Bearer {GIT_PAT_TOKEN}"} if GIT_PAT_TOKEN else {}
 )
@@ -32,21 +37,23 @@ def create_pipeline_mechanic_agent() -> LlmAgent:
 - Repository: `{dag_repo}`
 
 🔧 **TOOLS AVAILABLE:**
-- `search_code`: Search for DAG files in the repository
+- `get_file_contents`: Get file contents from GitHub repository
+- `search_code`: Search for DAG files in the repository 
 - `create_branch`: Create a new branch for changes
 - `create_or_update_file`: Create or update DAG file with current code
 - `create_pull_request`: Create a pull request for DAG changes
 - `get_dag_source`: Get DAG source code from Airflow (via DAG Manager Agent)
-- `get_dag`: Get DAG information to identify the file
+- `get_dag`: Get DAG information to identify the file (Airflow MCP)
 
 **VERSION CONTROL WORKFLOW:**
 1. **DAG Discovery**: Use `get_dag` to get DAG information and identify the file_token
 2. **Source Retrieval**: Use `get_dag_source` with file_token to get current DAG code
 3. **Repository Search**: Use `search_code` to find the DAG file in the repository
    - Search pattern: `repo:{dag_repo} path:*.py` (or specific file pattern)
-4. **Branch Creation**: Create a new branch for the changes to the above file. Do not change the file name.
-5. **File Update**: Use `create_or_update_file` to update the corresponding file in github with updated code in the branch created.
-6. **Pull Request**: Create a PR with the above changes and proper description from the newly created branch to the main branch.
+4. **File Content Check**: Use `get_file_contents` to get current file information from repository. This also contains the sha value of the file. Use the value of repo and file path obtained from the previous step to get the file information.
+5. **Branch Creation**: Create a new branch for the changes to the above file. Do not change the file name.
+6. **File Update**: Use `create_or_update_file` to update the corresponding file in github with updated code in the branch created. For update operations use the SHA value of the file obtained from the previous step.
+7. **Pull Request**: Create a PR with the above changes and proper description from the newly created branch to the main branch.
 
 **SEARCH PATTERNS:**
 - General DAG search: `repo:{dag_repo} path:*.py`
@@ -92,8 +99,16 @@ Use these tools to maintain proper version control of DAG files and create pull 
         model="gemini-2.0-flash",
         instruction=instruction,
         tools=[
+            # Local GitHub MCP server for get_file_contents
             McpToolset(
-                connection_params=GITHUB_MCP_CONNECTION_PARAMS,
+                connection_params=LOCAL_GITHUB_MCP_CONNECTION_PARAMS,
+                tool_filter=[
+                    'get_file_contents'
+                ]
+            ),
+            # Remote GitHub MCP server for other GitHub tools
+            McpToolset(
+                connection_params=REMOTE_GITHUB_MCP_CONNECTION_PARAMS,
                 tool_filter=[
                     'search_code',
                     'create_branch',
@@ -101,6 +116,7 @@ Use these tools to maintain proper version control of DAG files and create pull 
                     'create_pull_request'
                 ]
             ),
+            # Airflow MCP server
             McpToolset(
                 connection_params=MCP_CONNECTION_PARAMS,
                 tool_filter=[
@@ -120,7 +136,8 @@ root_agent = pipeline_mechanic_agent
 if __name__ == "__main__":
     print("🔧 PipelineMechanic Agent Initialized!")
     print(f"📡 Connecting to Airflow MCP server at {MCP_HOST}:{MCP_PORT}")
-    print(f"📡 Connecting to GitHub MCP server at {GITHUB_MCP_URL}")
+    print(f"📡 Connecting to Local GitHub MCP server at {GITHUB_MCP_HOST}:{GITHUB_MCP_PORT} (for get_file_contents)")
+    print(f"📡 Connecting to Remote GitHub MCP server at {GITHUB_MCP_URL} (for other GitHub tools)")
     print(f"🎯 Target repository: {DAG_REPOSITORY or 'your-org/your-repo'}")
     print("💬 Ready to help manage version control of DAG files!")
     print("🚀 Use 'adk api_server --a2a --port 8003 vayu_agent/remote_agents/pipeline_mechanic' to start this agent")

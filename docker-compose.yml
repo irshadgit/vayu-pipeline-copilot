@@ -132,6 +132,30 @@ services:
       retries: 3
       start_period: 5s
 
+  github-mcp-server:
+    build:
+      context: ./github-mcp
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - GITHUB_PAT_TOKEN=${GITHUB_PAT_TOKEN}
+      - MCP_TRANSPORT=sse
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=3002
+      - LOG_LEVEL=info
+    volumes:
+      - ./github-mcp/server.py:/app/server.py
+      - ./github-mcp/http_utils.py:/app/http_utils.py
+      - ./github-mcp/tools:/app/tools
+      - ./github-mcp/schema:/app/schema
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:3002/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
   # Main Vayu Orchestrator Agent
   vayu-orchestrator:
     build:
@@ -167,6 +191,8 @@ services:
       - PYTHONPATH=/app
       - AIRFLOW_MCP_HOST=${AIRFLOW_MCP_HOST:-airflow-mcp-server}
       - AIRFLOW_MCP_PORT=${AIRFLOW_MCP_PORT:-3000}
+      - GITHUB_MCP_HOST=github-mcp-server
+      - GITHUB_MCP_PORT=3002
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - GIT_PAT_TOKEN=${GITHUB_PAT_TOKEN}
       - DAG_REPOSITORY=${DAG_REPOSITORY}
@@ -175,6 +201,7 @@ services:
     command: ["adk", "api_server", "--a2a", "--port", "8001","--host", "0.0.0.0", "vayu_agent/remote_agents"]
     depends_on:
       - airflow-mcp-server
+      - github-mcp-server
       - airflow-webserver
     restart: unless-stopped
     healthcheck:

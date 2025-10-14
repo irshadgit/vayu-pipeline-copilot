@@ -43,7 +43,7 @@ def create_dag_troubleshooter_agent() -> LlmAgent:
 - `get_config`: Get specific configuration value by section and option
 - `get_variables`: List and filter variables
 - `get_variable`: Get specific variable details
-- `create_variable`: Create new variables
+- `create_variable`: Create new airflow variables
 - `update_variable`: Update existing variables (value and description)
 - `delete_variable`: Delete variables
 
