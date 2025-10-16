@@ -1,4 +1,6 @@
 import os
+import time
+import asyncio
 from google.adk.agents import LlmAgent
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.adk.tools.mcp_tool.mcp_toolset import SseConnectionParams, StreamableHTTPConnectionParams
@@ -21,12 +23,18 @@ LOCAL_GITHUB_MCP_CONNECTION_PARAMS = SseConnectionParams(url=f"http://{GITHUB_MC
 # Remote GitHub MCP server for other GitHub tools
 REMOTE_GITHUB_MCP_CONNECTION_PARAMS = StreamableHTTPConnectionParams(
     url=GITHUB_MCP_URL,
-    headers={"Authorization": f"Bearer {GIT_PAT_TOKEN}"} if GIT_PAT_TOKEN else {}
+    headers={"Authorization": f"Bearer {GIT_PAT_TOKEN}"} if GIT_PAT_TOKEN else {},
+    # Add authentication configuration for ADK framework
+    auth_config={
+        "auth_scheme": "bearer",
+        "token": GIT_PAT_TOKEN
+    } if GIT_PAT_TOKEN else None
 )
 
 def create_pipeline_mechanic_agent() -> LlmAgent:
     """
     Creates the PipelineMechanic Agent - specializes in version control of DAG git repository.
+    Includes retry logic for Gemini API overload issues.
     """
     # Create dynamic instruction with DAG repository only
     dag_repo = DAG_REPOSITORY or "your-org/your-repo"
@@ -103,19 +111,21 @@ Use these tools to maintain proper version control of DAG files and create pull 
             McpToolset(
                 connection_params=LOCAL_GITHUB_MCP_CONNECTION_PARAMS,
                 tool_filter=[
-                    'get_file_contents'
-                ]
-            ),
-            # Remote GitHub MCP server for other GitHub tools
-            McpToolset(
-                connection_params=REMOTE_GITHUB_MCP_CONNECTION_PARAMS,
-                tool_filter=[
+                    'get_file_contents',
                     'search_code',
                     'create_branch',
                     'create_or_update_file',
                     'create_pull_request'
                 ]
             ),
+            # # Remote GitHub MCP server for other GitHub tools
+            # McpToolset(
+            #     connection_params=REMOTE_GITHUB_MCP_CONNECTION_PARAMS,
+            #     tool_filter=[
+            #         'create_or_update_file',
+            #         'create_pull_request'
+            #     ]
+            # ),
             # Airflow MCP server
             McpToolset(
                 connection_params=MCP_CONNECTION_PARAMS,
@@ -126,6 +136,23 @@ Use these tools to maintain proper version control of DAG files and create pull 
             )
         ]
     )
+
+# Validate environment variables
+def validate_environment():
+    """Validate required environment variables."""
+    missing_vars = []
+    
+    if not GIT_PAT_TOKEN:
+        missing_vars.append("GIT_PAT_TOKEN")
+    
+    if missing_vars:
+        print(f"⚠️  Warning: Missing environment variables: {', '.join(missing_vars)}")
+        print("   Some GitHub operations may not work properly.")
+    
+    return len(missing_vars) == 0
+
+# Validate environment before creating agent
+validate_environment()
 
 # Create the agent instance
 pipeline_mechanic_agent = create_pipeline_mechanic_agent()

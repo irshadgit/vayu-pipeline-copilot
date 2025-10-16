@@ -5,6 +5,8 @@ A Model Context Protocol (MCP) server for interacting with GitHub repositories t
 ## Features
 
 - **get_file_contents**: Get the contents of files or directories in GitHub repositories
+- **search_code**: Search for files in GitHub repositories using the Git Trees API
+- **create_branch**: Create new branches in GitHub repositories from existing branches
 - Support for specific branches, tags, or commits
 - Clean, minimal implementation following MCP standards
 
@@ -65,6 +67,43 @@ Get the contents of a file or directory in a GitHub repository.
   - `html_url`: GitHub web URL
   - And more...
 
+### search_code
+
+Search for files in a GitHub repository using the Git Trees API.
+
+**Parameters:**
+- `owner` (string, required): The account owner of the repository
+- `repo` (string, required): The name of the repository without the .git extension
+- `query` (string, optional): Search query to filter file names or paths (case-insensitive substring match)
+- `ref` (string, optional): The name of the commit/branch/tag (defaults to "main")
+- `recursive` (boolean, optional): Whether to fetch the tree recursively (defaults to True)
+- `file_extension` (string, optional): File extension filter (e.g., ".py", ".js", ".md")
+- `path_filter` (string, optional): Path filter to limit search to specific directories
+
+**Returns:**
+- Git tree object with only matching files including:
+  - `sha`: Tree SHA
+  - `url`: Tree URL
+  - `truncated`: Whether the tree was truncated
+  - `tree`: Array of only the matching file objects with path, mode, type, sha, size, and url
+
+### create_branch
+
+Create a new branch in a GitHub repository from an existing branch.
+
+**Parameters:**
+- `owner` (string, required): The account owner of the repository
+- `repo` (string, required): The name of the repository without the .git extension
+- `new_branch_name` (string, required): The name of the new branch to create
+- `from_branch` (string, optional): The name of the branch to create from (defaults to "main")
+
+**Returns:**
+- Git reference object containing the created branch information including:
+  - `ref`: The full reference name (e.g., "refs/heads/feature-branch")
+  - `node_id`: The node ID of the reference
+  - `url`: The URL of the reference
+  - `object`: Object containing the commit SHA and type
+
 ## Example Usage
 
 ```python
@@ -76,6 +115,63 @@ await get_file_contents_tool(owner="octocat", repo="Hello-World", path="README.m
 
 # Get file from specific branch
 await get_file_contents_tool(owner="octocat", repo="Hello-World", path="README.md", ref="develop")
+
+# Search for Python files
+await search_code_tool(owner="octocat", repo="Hello-World", file_extension=".py")
+
+# Search for files containing "test" in the name
+await search_code_tool(owner="octocat", repo="Hello-World", query="test")
+
+# Search for files in a specific directory
+await search_code_tool(owner="octocat", repo="Hello-World", path_filter="src/")
+
+# Search for JavaScript files containing "component" in the name
+await search_code_tool(owner="octocat", repo="Hello-World", query="component", file_extension=".js")
+
+# Create a new branch from main
+await create_branch_tool(owner="octocat", repo="Hello-World", new_branch_name="feature-branch")
+
+# Create a new branch from a specific branch
+await create_branch_tool(owner="octocat", repo="Hello-World", new_branch_name="hotfix", from_branch="develop")
+
+# Create a new file
+await create_or_update_file_tool(
+    owner="octocat", 
+    repo="Hello-World", 
+    path="new_file.py", 
+    content="print('Hello, World!')", 
+    message="Add new Python file"
+)
+
+# Update an existing file (requires SHA from get_file_contents)
+await create_or_update_file_tool(
+    owner="octocat", 
+    repo="Hello-World", 
+    path="existing_file.py", 
+    content="print('Updated content!')", 
+    message="Update existing file",
+    sha="abc123def456"  # SHA from get_file_contents response
+)
+
+# Create a pull request from feature branch to main
+await create_pull_request_tool(
+    owner="octocat", 
+    repo="Hello-World", 
+    title="Add new feature", 
+    head="feature-branch", 
+    base="main",
+    body="This pull request adds a new feature to the application."
+)
+
+# Create a pull request from feature branch to develop
+await create_pull_request_tool(
+    owner="octocat", 
+    repo="Hello-World", 
+    title="Bug fix for issue #123", 
+    head="bugfix-branch", 
+    base="develop",
+    body="This pull request fixes the bug described in issue #123."
+)
 ```
 
 ## Architecture

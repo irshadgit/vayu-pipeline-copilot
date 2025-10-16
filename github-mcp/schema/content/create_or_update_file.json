@@ -1,0 +1,175 @@
+{
+  "title": "Create or Update File Response",
+  "description": "Response schema for creating or updating a file in GitHub repository",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "sha": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "html_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "git_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "download_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "type": "string"
+        },
+        "_links": {
+          "type": "object",
+          "properties": {
+            "self": {
+              "type": "string",
+              "format": "uri"
+            },
+            "git": {
+              "type": "string",
+              "format": "uri"
+            },
+            "html": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": ["self", "git", "html"]
+        }
+      },
+      "required": ["name", "path", "sha", "size", "url", "html_url", "git_url", "download_url", "type", "_links"]
+    },
+    "commit": {
+      "type": "object",
+      "properties": {
+        "sha": {
+          "type": "string"
+        },
+        "node_id": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "html_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "author": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "required": ["date", "name", "email"]
+        },
+        "committer": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "required": ["date", "name", "email"]
+        },
+        "message": {
+          "type": "string"
+        },
+        "tree": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "sha": {
+              "type": "string"
+            }
+          },
+          "required": ["url", "sha"]
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "html_url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "sha": {
+                "type": "string"
+              }
+            },
+            "required": ["url", "html_url", "sha"]
+          }
+        },
+        "verification": {
+          "type": "object",
+          "properties": {
+            "verified": {
+              "type": "boolean"
+            },
+            "reason": {
+              "type": "string"
+            },
+            "signature": {
+              "type": ["string", "null"]
+            },
+            "payload": {
+              "type": ["string", "null"]
+            },
+            "verified_at": {
+              "type": ["string", "null"],
+              "format": "date-time"
+            }
+          },
+          "required": ["verified", "reason", "signature", "payload", "verified_at"]
+        }
+      },
+      "required": ["sha", "node_id", "url", "html_url", "author", "committer", "message", "tree", "parents", "verification"]
+    }
+  },
+  "required": ["content", "commit"]
+}
